@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/dashboard_controller.dart';
+import '../main.dart';
 import '../model/user_model.dart';
 import '../routes/app_route.dart';
 import '../utilis/app_colors.dart';
@@ -138,7 +139,7 @@ class SuperAdminDashboard extends StatelessWidget {
               Obx(() => _buildStatsGrid(dashboardController)),
               const SizedBox(height: 20),
               _buildManagementActions(context),
-              const SizedBox(height: 20),
+              const SizedBox(height: 150),
               // Row(
               //   crossAxisAlignment: CrossAxisAlignment.start,
               //   children: [
@@ -432,7 +433,7 @@ class SuperAdminDashboard extends StatelessWidget {
 
   Widget _buildStatsGrid(DashboardController controller) {
     return GridView.count(
-      crossAxisCount: 3,
+      crossAxisCount: responsive!.isMobile?2:4,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 16,
@@ -542,7 +543,7 @@ class SuperAdminDashboard extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         GridView.count(
-          crossAxisCount: 4,
+          crossAxisCount: responsive!.isMobile?3:4,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 12,
@@ -945,6 +946,7 @@ class AdminDashboard extends StatelessWidget {
                   ),
                 ],
               ),
+              SizedBox(height: 150,)
             ],
           ),
         ),
@@ -1130,7 +1132,7 @@ class AdminDashboard extends StatelessWidget {
 
   Widget _buildStatsGrid(DashboardController controller) {
     return GridView.count(
-      crossAxisCount: 2,
+      crossAxisCount: responsive!.isMobile?2:3,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 16,
@@ -1250,7 +1252,7 @@ class AdminDashboard extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         GridView.count(
-          crossAxisCount: 4,
+          crossAxisCount: responsive!.isMobile?3:4,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 12,

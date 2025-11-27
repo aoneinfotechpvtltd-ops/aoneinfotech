@@ -18,12 +18,27 @@ void main() async {
 
   runApp(const ChallanManagementApp());
 }
+Responsive? responsive;
+class Responsive {
+  final BuildContext context;
+  Responsive(this.context);
 
+
+  bool get isMobile => MediaQuery.of(context).size.width < 600;
+  bool get isTablet => MediaQuery.of(context).size.width >= 600 && MediaQuery.of(context).size.width < 1024;
+  bool get isDesktop => MediaQuery.of(context).size.width >= 1024;
+
+
+  double wp(double percent) => MediaQuery.of(context).size.width * percent / 100;
+  double hp(double percent) => MediaQuery.of(context).size.height * percent / 100;
+}
 class ChallanManagementApp extends StatelessWidget {
   const ChallanManagementApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    responsive = Responsive(context);
+
     return GetMaterialApp(
       title: 'Challan Management System',
       debugShowCheckedModeBanner: false,

@@ -489,6 +489,7 @@
 //   }
 // }
 import 'package:aoneinfotech/config/print_pdf.dart';
+import 'package:aoneinfotech/main.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -575,6 +576,7 @@ class UserDashboard extends StatelessWidget {
               _buildTokensSection(tokenController),
               const SizedBox(height: 20),
               _buildRecentChallansSection(dashboardController),
+              SizedBox(height: 150,)
             ],
           ),
         ),
@@ -676,7 +678,7 @@ class UserDashboard extends StatelessWidget {
 
   Widget _buildStatsGrid(DashboardController controller) {
     return GridView.count(
-      crossAxisCount: 2,
+      crossAxisCount: responsive!.isMobile?2:3,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 16,
@@ -773,7 +775,7 @@ class UserDashboard extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         GridView.count(
-          crossAxisCount: 3,
+          crossAxisCount: responsive!.isMobile?3:4,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 12,
