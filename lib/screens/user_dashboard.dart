@@ -527,16 +527,16 @@ class UserDashboard extends StatelessWidget {
           PopupMenuButton(
             icon: const Icon(Icons.more_vert),
             itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'profile',
-                child: Row(
-                  children: [
-                    Icon(Icons.person_outline),
-                    SizedBox(width: 8),
-                    Text('Profile'),
-                  ],
-                ),
-              ),
+              // const PopupMenuItem(
+              //   value: 'profile',
+              //   child: Row(
+              //     children: [
+              //       Icon(Icons.person_outline),
+              //       SizedBox(width: 8),
+              //       Text('Profile'),
+              //     ],
+              //   ),
+              // ),
               const PopupMenuItem(
                 value: 'logout',
                 child: Row(

@@ -1,3 +1,4 @@
+import 'package:aoneinfotech/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
@@ -64,6 +65,8 @@ class LoginScreen extends StatelessWidget {
 
                     // Login Card
                     Container(
+                      width: MediaQuery.of(context).size.width * (responsive!.isMobile ? 0.9 : 0.5),
+
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -77,7 +80,7 @@ class LoginScreen extends StatelessWidget {
                         ],
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           // Email Field
                           TextFormField(
@@ -170,13 +173,18 @@ class LoginScreen extends StatelessWidget {
                                 ),
                               ),
                             )
-                                : const Text(
-                              'Login',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                                : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                                                  'Login',
+                                                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                                                  ),
+                                                                ),
+                                  ],
+                                ),
                           )),
                         ],
                       ),

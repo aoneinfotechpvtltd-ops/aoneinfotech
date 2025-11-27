@@ -23,9 +23,9 @@ ${challan.driverPhone != null ? 'Phone: ${challan.driverPhone}' : ''}
 MATERIAL DETAILS
 Material: ${challan.materialType}
 Weight: ${challan.weight} KG
-Rate: ₹${challan.rate}/KG
+Rate: ${challan.rate}/KG
 ----------------------------------------
-TOTAL AMOUNT: ₹${challan.totalAmount}
+TOTAL AMOUNT: ${challan.totalAmount}
 ----------------------------------------
 ${challan.remarks != null ? 'Remarks: ${challan.remarks}' : ''}
 // ========================================

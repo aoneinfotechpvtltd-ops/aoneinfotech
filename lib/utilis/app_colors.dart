@@ -27,10 +27,14 @@ class AppColors {
   static const Color info = Color(0xFF3B82F6);
 
   // Role Colors
-  static const Color superAdmin = Color(0xFF8B5CF6);
+  // static const Color superAdmin = Color(0xFF8B5CF6);
+  // static const Color admin = Color(0xFF3B82F6);
+  // static const Color user = Color(0xFF10B981);
+  // static const Color viewer = Color(0xFF64748B);
+  static const Color superAdmin = Color(0xFF3B82F6);
   static const Color admin = Color(0xFF3B82F6);
-  static const Color user = Color(0xFF10B981);
-  static const Color viewer = Color(0xFF64748B);
+  static const Color user = Color(0xFF3B82F6);
+  static const Color viewer = Color(0xFF3B82F6);
 
   // Gradient
   static const LinearGradient primaryGradient = LinearGradient(

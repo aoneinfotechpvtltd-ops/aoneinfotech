@@ -82,16 +82,16 @@ class SuperAdminDashboard extends StatelessWidget {
           PopupMenuButton(
             icon: const Icon(Icons.more_vert),
             itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'profile',
-                child: Row(
-                  children: [
-                    Icon(Icons.person_outline),
-                    SizedBox(width: 8),
-                    Text('Profile'),
-                  ],
-                ),
-              ),
+              // const PopupMenuItem(
+              //   value: 'profile',
+              //   child: Row(
+              //     children: [
+              //       Icon(Icons.person_outline),
+              //       SizedBox(width: 8),
+              //       Text('Profile'),
+              //     ],
+              //   ),
+              // ),
               const PopupMenuItem(
                 value: 'settings',
                 child: Row(
@@ -269,17 +269,17 @@ class SuperAdminDashboard extends StatelessWidget {
             title: const Text('System Settings'),
             onTap: () => Get.toNamed(AppRoutes.systemSettings),
           ),
-          ListTile(
-            leading: const Icon(Icons.backup),
-            title: const Text('Backup & Restore'),
-            onTap: () {
-              Get.snackbar(
-                'Feature',
-                'Backup feature coming soon',
-                snackPosition: SnackPosition.BOTTOM,
-              );
-            },
-          ),
+          // ListTile(
+          //   leading: const Icon(Icons.backup),
+          //   title: const Text('Backup & Restore'),
+          //   onTap: () {
+          //     Get.snackbar(
+          //       'Feature',
+          //       'Backup feature coming soon',
+          //       snackPosition: SnackPosition.BOTTOM,
+          //     );
+          //   },
+          // ),
         ],
       ),
     );
@@ -890,16 +890,16 @@ class AdminDashboard extends StatelessWidget {
           PopupMenuButton(
             icon: const Icon(Icons.more_vert),
             itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'profile',
-                child: Row(
-                  children: [
-                    Icon(Icons.person_outline),
-                    SizedBox(width: 8),
-                    Text('Profile'),
-                  ],
-                ),
-              ),
+              // const PopupMenuItem(
+              //   value: 'profile',
+              //   child: Row(
+              //     children: [
+              //       Icon(Icons.person_outline),
+              //       SizedBox(width: 8),
+              //       Text('Profile'),
+              //     ],
+              //   ),
+              // ),
               const PopupMenuItem(
                 value: 'logout',
                 child: Row(
