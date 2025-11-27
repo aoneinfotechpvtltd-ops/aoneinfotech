@@ -1,3 +1,234 @@
+// import 'package:aoneinfotech/main.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_animate/flutter_animate.dart';
+// import 'package:get/get.dart';
+//
+// import '../controllers/auth_controller.dart';
+// import '../utilis/app_colors.dart';
+//
+// class LoginScreen extends StatelessWidget {
+//   const LoginScreen({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final authController = Get.find<AuthController>();
+//     final emailController = TextEditingController();
+//     final passwordController = TextEditingController();
+//     final formKey = GlobalKey<FormState>();
+//     final obscurePassword = true.obs;
+//
+//     return Scaffold(
+//       body: Container(
+//         decoration: const BoxDecoration(
+//           gradient: AppColors.primaryGradient,
+//         ),
+//         child: SafeArea(
+//           child: Center(
+//             child: SingleChildScrollView(
+//               padding: const EdgeInsets.all(24),
+//               child: Form(
+//                 key: formKey,
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     // Logo
+//                     Container(
+//                       padding: const EdgeInsets.all(20),
+//                       decoration: BoxDecoration(
+//                         color: Colors.white,
+//                         borderRadius: BorderRadius.circular(20),
+//                       ),
+//                       child: const Icon(
+//                         Icons.receipt_long,
+//                         size: 60,
+//                         color: AppColors.primary,
+//                       ),
+//                     ).animate().scale(duration: 500.ms),
+//                     const SizedBox(height: 16),
+//                     const Text(
+//                       'Challan Management',
+//                       style: TextStyle(
+//                         fontSize: 28,
+//                         fontWeight: FontWeight.bold,
+//                         color: Colors.white,
+//                       ),
+//                     ).animate().fadeIn(delay: 200.ms),
+//                     const SizedBox(height: 8),
+//                     const Text(
+//                       'Login to continue',
+//                       style: TextStyle(
+//                         fontSize: 16,
+//                         color: Colors.white70,
+//                       ),
+//                     ).animate().fadeIn(delay: 300.ms),
+//                     const SizedBox(height: 40),
+//
+//                     // Login Card
+//                     Container(
+//                       width: MediaQuery.of(context).size.width * (responsive!.isMobile ? 0.9 : 0.5),
+//
+//                       padding: const EdgeInsets.all(24),
+//                       decoration: BoxDecoration(
+//                         color: Colors.white,
+//                         borderRadius: BorderRadius.circular(20),
+//                         boxShadow: [
+//                           BoxShadow(
+//                             color: Colors.black.withOpacity(0.1),
+//                             blurRadius: 20,
+//                             offset: const Offset(0, 10),
+//                           ),
+//                         ],
+//                       ),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.center,
+//                         children: [
+//                           // Email Field
+//                           TextFormField(
+//                             controller: emailController,
+//                             decoration: InputDecoration(
+//                               labelText: 'Email',
+//                               prefixIcon: const Icon(Icons.email_outlined),
+//                               border: OutlineInputBorder(
+//                                 borderRadius: BorderRadius.circular(12),
+//                               ),
+//                               filled: true,
+//                               fillColor: AppColors.surfaceVariant,
+//                             ),
+//                             keyboardType: TextInputType.emailAddress,
+//                             validator: (value) {
+//                               if (value == null || value.isEmpty) {
+//                                 return 'Please enter email';
+//                               }
+//                               if (!value.contains('@')) {
+//                                 return 'Please enter valid email';
+//                               }
+//                               return null;
+//                             },
+//                           ),
+//                           const SizedBox(height: 16),
+//
+//                           // Password Field
+//                           Obx(() => TextFormField(
+//                             controller: passwordController,
+//                             obscureText: obscurePassword.value,
+//                             decoration: InputDecoration(
+//                               labelText: 'Password',
+//                               prefixIcon: const Icon(Icons.lock_outlined),
+//                               suffixIcon: IconButton(
+//                                 icon: Icon(
+//                                   obscurePassword.value
+//                                       ? Icons.visibility_outlined
+//                                       : Icons.visibility_off_outlined,
+//                                 ),
+//                                 onPressed: () {
+//                                   obscurePassword.value = !obscurePassword.value;
+//                                 },
+//                               ),
+//                               border: OutlineInputBorder(
+//                                 borderRadius: BorderRadius.circular(12),
+//                               ),
+//                               filled: true,
+//                               fillColor: AppColors.surfaceVariant,
+//                             ),
+//                             validator: (value) {
+//                               if (value == null || value.isEmpty) {
+//                                 return 'Please enter password';
+//                               }
+//                               if (value.length < 6) {
+//                                 return 'Password must be at least 6 characters';
+//                               }
+//                               return null;
+//                             },
+//                           )),
+//                           const SizedBox(height: 24),
+//
+//                           // Login Button
+//                           Obx(() => ElevatedButton(
+//                             onPressed: authController.isLoading.value
+//                                 ? null
+//                                 : () {
+//                               if (formKey.currentState!.validate()) {
+//                                 authController.login(
+//                                   emailController.text.trim(),
+//                                   passwordController.text,
+//                                 );
+//                               }
+//                             },
+//                             style: ElevatedButton.styleFrom(
+//                               backgroundColor: AppColors.primary,
+//                               foregroundColor: Colors.white,
+//                               padding: const EdgeInsets.symmetric(vertical: 16),
+//                               shape: RoundedRectangleBorder(
+//                                 borderRadius: BorderRadius.circular(12),
+//                               ),
+//                             ),
+//                             child: authController.isLoading.value
+//                                 ? const SizedBox(
+//                               height: 20,
+//                               width: 20,
+//                               child: CircularProgressIndicator(
+//                                 strokeWidth: 2,
+//                                 valueColor: AlwaysStoppedAnimation<Color>(
+//                                   Colors.white,
+//                                 ),
+//                               ),
+//                             )
+//                                 : Row(
+//                               mainAxisAlignment: MainAxisAlignment.center,
+//                                   children: [
+//                                     const Text(
+//                                                                   'Login',
+//                                                                   style: TextStyle(
+//                                     fontSize: 16,
+//                                     fontWeight: FontWeight.bold,
+//                                                                   ),
+//                                                                 ),
+//                                   ],
+//                                 ),
+//                           )),
+//                         ],
+//                       ),
+//                     ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2, end: 0),
+//
+//                     const SizedBox(height: 24),
+//
+//                     // Demo Credentials
+//                     Container(
+//                       padding: const EdgeInsets.all(16),
+//                       decoration: BoxDecoration(
+//                         color: Colors.white.withOpacity(0.2),
+//                         borderRadius: BorderRadius.circular(12),
+//                       ),
+//                       child: const Column(
+//                         children: [
+//                           Text(
+//                             'Credentials:',
+//                             style: TextStyle(
+//                               color: Colors.white,
+//                               fontWeight: FontWeight.bold,
+//                             ),
+//                           ),
+//                           SizedBox(height: 8),
+//                           Text(
+//                             'Super Admin: admin@example.com / admin123',
+//                             style: TextStyle(
+//                               color: Colors.white,
+//                               fontSize: 12,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ).animate().fadeIn(delay: 600.ms),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 import 'package:aoneinfotech/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -6,17 +237,40 @@ import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 import '../utilis/app_colors.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final authController = Get.find<AuthController>();
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-    final obscurePassword = true.obs;
+  State<LoginScreen> createState() => _LoginScreenState();
+}
 
+class _LoginScreenState extends State<LoginScreen> {
+  // Yeh sab yaha rakho, build ke andar nahi
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  // RxBool bhi yaha
+  final RxBool _obscurePassword = true.obs;
+
+  late final AuthController _authController;
+
+  @override
+  void initState() {
+    super.initState();
+    _authController = Get.find<AuthController>();
+  }
+
+  @override
+  void dispose() {
+    // Controllers ko dispose karna zaroori hai
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -27,7 +281,7 @@ class LoginScreen extends StatelessWidget {
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Form(
-                key: formKey,
+                key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -44,7 +298,9 @@ class LoginScreen extends StatelessWidget {
                         color: AppColors.primary,
                       ),
                     ).animate().scale(duration: 500.ms),
+
                     const SizedBox(height: 16),
+
                     const Text(
                       'Challan Management',
                       style: TextStyle(
@@ -53,7 +309,9 @@ class LoginScreen extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ).animate().fadeIn(delay: 200.ms),
+
                     const SizedBox(height: 8),
+
                     const Text(
                       'Login to continue',
                       style: TextStyle(
@@ -61,12 +319,13 @@ class LoginScreen extends StatelessWidget {
                         color: Colors.white70,
                       ),
                     ).animate().fadeIn(delay: 300.ms),
+
                     const SizedBox(height: 40),
 
                     // Login Card
                     Container(
-                      width: MediaQuery.of(context).size.width * (responsive!.isMobile ? 0.9 : 0.5),
-
+                      width: MediaQuery.of(context).size.width *
+                          (responsive!.isMobile ? 0.9 : 0.5),
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -84,7 +343,7 @@ class LoginScreen extends StatelessWidget {
                         children: [
                           // Email Field
                           TextFormField(
-                            controller: emailController,
+                            controller: _emailController,
                             decoration: InputDecoration(
                               labelText: 'Email',
                               prefixIcon: const Icon(Icons.email_outlined),
@@ -108,84 +367,94 @@ class LoginScreen extends StatelessWidget {
                           const SizedBox(height: 16),
 
                           // Password Field
-                          Obx(() => TextFormField(
-                            controller: passwordController,
-                            obscureText: obscurePassword.value,
-                            decoration: InputDecoration(
-                              labelText: 'Password',
-                              prefixIcon: const Icon(Icons.lock_outlined),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  obscurePassword.value
-                                      ? Icons.visibility_outlined
-                                      : Icons.visibility_off_outlined,
+                          Obx(
+                                () => TextFormField(
+                              controller: _passwordController,
+                              obscureText: _obscurePassword.value,
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                                prefixIcon:
+                                const Icon(Icons.lock_outlined),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword.value
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                  ),
+                                  onPressed: () {
+                                    _obscurePassword.value =
+                                    !_obscurePassword.value;
+                                  },
                                 ),
-                                onPressed: () {
-                                  obscurePassword.value = !obscurePassword.value;
-                                },
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                filled: true,
+                                fillColor: AppColors.surfaceVariant,
                               ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              filled: true,
-                              fillColor: AppColors.surfaceVariant,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter password';
+                                }
+                                if (value.length < 6) {
+                                  return 'Password must be at least 6 characters';
+                                }
+                                return null;
+                              },
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter password';
-                              }
-                              if (value.length < 6) {
-                                return 'Password must be at least 6 characters';
-                              }
-                              return null;
-                            },
-                          )),
+                          ),
                           const SizedBox(height: 24),
 
                           // Login Button
-                          Obx(() => ElevatedButton(
-                            onPressed: authController.isLoading.value
-                                ? null
-                                : () {
-                              if (formKey.currentState!.validate()) {
-                                authController.login(
-                                  emailController.text.trim(),
-                                  passwordController.text,
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                          Obx(
+                                () => ElevatedButton(
+                              onPressed: _authController.isLoading.value
+                                  ? null
+                                  : () {
+                                if (_formKey.currentState!
+                                    .validate()) {
+                                  _authController.login(
+                                    _emailController.text.trim(),
+                                    _passwordController.text,
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: _authController.isLoading.value
+                                  ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor:
+                                  AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                                  : const Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Login',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            child: authController.isLoading.value
-                                ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
-                                ),
-                              ),
-                            )
-                                : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                                                  'Login',
-                                                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                                                  ),
-                                                                ),
-                                  ],
-                                ),
-                          )),
+                          ),
                         ],
                       ),
                     ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2, end: 0),
