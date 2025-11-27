@@ -1,0 +1,1306 @@
+// // import 'package:get/get.dart';
+// // import 'package:supabase_flutter/supabase_flutter.dart';
+// //
+// // import '../config/supabase_config.dart';
+// // import '../model/user_model.dart';
+// //
+// // class UserManagementController extends GetxController {
+// //   final supabase = Supabase.instance.client;
+// //
+// //   final RxList<UserModel> users = <UserModel>[].obs;
+// //   final RxBool isLoading = false.obs;
+// //
+// //   @override
+// //   void onInit() {
+// //     super.onInit();
+// //     loadUsers();
+// //   }
+// //
+// //   Future<void> loadUsers() async {
+// //     try {
+// //       isLoading.value = true;
+// //
+// //       final response = await supabase
+// //           .from(SupabaseConfig.usersTable)
+// //           .select()
+// //           .order('created_at', ascending: false);
+// //
+// //       users.value = (response as List)
+// //           .map((e) => UserModel.fromJson(e))
+// //           .toList();
+// //     } catch (e) {
+// //       print( 'Failed to load users: ${e.toString()}');
+// //     } finally {
+// //       isLoading.value = false;
+// //     }
+// //   }
+// //
+// //   Future<void> createUser({
+// //     required String email,
+// //     required String fullName,
+// //     required String role,
+// //     String? phone,
+// //   }) async {
+// //     try {
+// //       isLoading.value = true;
+// //
+// //       final response = await supabase.functions.invoke(
+// //         'create-user', // function name
+// //         body: {
+// //           'email': email,
+// //           'fullName': fullName,
+// //           'role': role,
+// //           'phone': phone,
+// //         },
+// //       );
+// //
+// //       // Edge function से JSON आएगा
+// //       final data = response.data;
+// //
+// //       if (data is Map && data['error'] != null) {
+// //         throw data['error'];
+// //       }
+// //
+// //       await loadUsers();
+// //
+// //       Get.back();
+// //       Get.snackbar('Success', 'User created successfully');
+// //     } catch (e) {
+// //       print('createUser error: $e');
+// //       Get.snackbar('Error', 'Failed to create user: $e');
+// //     } finally {
+// //       isLoading.value = false;
+// //     }
+// //   }
+// //
+// //
+// //   Future<void> updateUserStatus(String userId, String status) async {
+// //     try {
+// //       await supabase
+// //           .from(SupabaseConfig.usersTable)
+// //           .update({'status': status})
+// //           .eq('id', userId);
+// //
+// //       await loadUsers();
+// //
+// //       Get.snackbar('Success', 'User status updated');
+// //     } catch (e) {
+// //       Get.snackbar('Error', 'Failed to update status: ${e.toString()}');
+// //     }
+// //   }
+// //
+// //   Future<void> deleteUser(String userId) async {
+// //     try {
+// //       await supabase.auth.admin.deleteUser(userId);
+// //       await loadUsers();
+// //
+// //       Get.snackbar('Success', 'User deleted successfully');
+// //     } catch (e) {
+// //       Get.snackbar('Error', 'Failed to delete user: ${e.toString()}');
+// //     }
+// //   }
+// // }
+// // ============================================
+// // USER MANAGEMENT CONTROLLER - UPDATED
+// // ============================================
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
+// import '../config/supabase_config.dart';
+// import '../model/user_model.dart';
+// import 'auth_controller.dart';
+//
+// class UserManagementController extends GetxController {
+//   final supabase = Supabase.instance.client;
+//   final authController = Get.put(AuthController());
+//
+//   final RxList<UserModel> users = <UserModel>[].obs;
+//   final RxBool isLoading = false.obs;
+//   final RxInt userCreationCount = 0.obs; // Track how many users an admin created
+//
+//   @override
+//   void onInit() {
+//     super.onInit();
+//     loadUsers();
+//     checkUserCreationLimit();
+//   }
+//
+//   // Check if admin has already created a user
+//   Future<void> checkUserCreationLimit() async {
+//     try {
+//       final currentUser = authController.currentUser.value;
+//       if (currentUser?.role == 'admin') {
+//         final response = await supabase
+//             .from(SupabaseConfig.usersTable)
+//             .select()
+//             .eq('created_by', currentUser!.id)
+//             .eq('role', 'user');
+//
+//         userCreationCount.value = (response as List).length;
+//       }
+//     } catch (e) {
+//       print('Error checking user creation limit: $e');
+//     }
+//   }
+//
+//   Future<void> loadUsers() async {
+//     try {
+//       isLoading.value = true;
+//       final currentUser = authController.currentUser.value;
+//
+//       var query = supabase
+//           .from(SupabaseConfig.usersTable)
+//           .select();
+//
+//       // If admin, only show users they created
+//       if (currentUser?.role == 'admin') {
+//         query = query.eq('created_by', currentUser!.id);
+//       }
+//
+//       final response = await query.order('created_at', ascending: false);
+//
+//       users.value = (response as List)
+//           .map((e) => UserModel.fromJson(e))
+//           .toList();
+//     } catch (e) {
+//       print('Failed to load users: ${e.toString()}');
+//     } finally {
+//       isLoading.value = false;
+//     }
+//   }
+//
+//   Future<void> createUser({
+//     required String email,
+//     required String fullName,
+//     required String role,
+//     String? phone,
+//   }) async {
+//     try {
+//       isLoading.value = true;
+//       final currentUser = authController.currentUser.value;
+//
+//       // ADMIN RESTRICTION: Can only create 1 user
+//       if (currentUser?.role == 'admin') {
+//         if (userCreationCount.value >= 1) {
+//           Get.snackbar(
+//             'Error',
+//             'Admin can only create 1 user. You have already created a user.',
+//             backgroundColor: Colors.red,
+//             colorText: Colors.white,
+//             duration: const Duration(seconds: 4),
+//           );
+//           return;
+//         }
+//
+//         // Admin can only create 'user' role
+//         if (role != 'user') {
+//           Get.snackbar(
+//             'Error',
+//             'Admin can only create users with "user" role',
+//             backgroundColor: Colors.red,
+//             colorText: Colors.white,
+//           );
+//           return;
+//         }
+//       }
+//
+//       // SUPER ADMIN RESTRICTION: Cannot create users, only admins
+//       if (currentUser?.role == 'super_admin' && role == 'user') {
+//         Get.snackbar(
+//           'Error',
+//           'Super Admin cannot create users directly. Only admins can create users.',
+//           backgroundColor: Colors.red,
+//           colorText: Colors.white,
+//           duration: const Duration(seconds: 4),
+//         );
+//         return;
+//       }
+//
+//       final response = await supabase.functions.invoke(
+//         'create-user',
+//         body: {
+//           'email': email,
+//           'fullName': fullName,
+//           'role': role,
+//           'phone': phone,
+//           'created_by': currentUser?.id,
+//         },
+//       );
+//
+//       final data = response.data;
+//
+//       if (data is Map && data['error'] != null) {
+//         throw data['error'];
+//       }
+//
+//       await loadUsers();
+//       await checkUserCreationLimit();
+//
+//       Get.back();
+//       Get.snackbar('Success', 'User created successfully');
+//     } catch (e) {
+//       print('createUser error: $e');
+//       Get.snackbar('Error', 'Failed to create user: $e');
+//     } finally {
+//       isLoading.value = false;
+//     }
+//   }
+//
+//   Future<void> updateUserStatus(String userId, String status) async {
+//     try {
+//       await supabase
+//           .from(SupabaseConfig.usersTable)
+//           .update({'status': status})
+//           .eq('id', userId);
+//
+//       await loadUsers();
+//       Get.snackbar('Success', 'User status updated');
+//     } catch (e) {
+//       Get.snackbar('Error', 'Failed to update status: ${e.toString()}');
+//     }
+//   }
+//
+//   Future<void> deleteUser(String userId) async {
+//     try {
+//       final currentUser = authController.currentUser.value;
+//
+//       // Get the user to check who created them
+//       final userToDelete = users.firstWhere((u) => u.id == userId);
+//
+//       // Admin can only delete users they created
+//       if (currentUser?.role == 'admin') {
+//         if (userToDelete.createdBy != currentUser!.id) {
+//           Get.snackbar(
+//             'Error',
+//             'You can only delete users you created',
+//             backgroundColor: Colors.red,
+//             colorText: Colors.white,
+//           );
+//           return;
+//         }
+//       }
+//
+//       await supabase.auth.admin.deleteUser(userId);
+//       await loadUsers();
+//       await checkUserCreationLimit();
+//
+//       Get.snackbar('Success', 'User deleted successfully');
+//     } catch (e) {
+//       Get.snackbar('Error', 'Failed to delete user: ${e.toString()}');
+//     }
+//   }
+//
+//   // Check if current user can create more users
+//   bool canCreateUser() {
+//     final currentUser = authController.currentUser.value;
+//
+//     if (currentUser?.role == 'admin') {
+//       return userCreationCount.value < 1;
+//     }
+//
+//     if (currentUser?.role == 'super_admin') {
+//       return true; // Can create admins
+//     }
+//
+//     return false;
+//   }
+// }
+//
+//
+// class TokenController extends GetxController {
+//   final supabase = Supabase.instance.client;
+//   final authController = Get.find<AuthController>();
+//
+//   final RxList<TokenModel> tokens = <TokenModel>[].obs;
+//   final RxBool isLoading = false.obs;
+//
+//   @override
+//   void onInit() {
+//     super.onInit();
+//     loadTokens();
+//   }
+//
+//   Future<void> loadTokens() async {
+//     try {
+//       isLoading.value = true;
+//       final currentUser = authController.currentUser.value;
+//
+//       var query = supabase.from(SupabaseConfig.tokensTable).select();
+//
+//       // USER: Only see their own tokens
+//       if (currentUser?.role == 'user') {
+//         query = query.eq('created_by', currentUser!.id);
+//       }
+//       // ADMIN & SUPER_ADMIN: See all tokens
+//
+//       final response = await query.order('created_at', ascending: false);
+//
+//       tokens.value = (response as List)
+//           .map((e) => TokenModel.fromJson(e))
+//           .toList();
+//     } catch (e) {
+//       Get.snackbar('Error', 'Failed to load tokens: ${e.toString()}');
+//     } finally {
+//       isLoading.value = false;
+//     }
+//   }
+//
+//   Future<void> createToken({
+//     required String tokenNumber,
+//     required DateTime validFrom,
+//     required DateTime validUntil,
+//     String? vehicleNumber,
+//     double? weightInKg,
+//     String? materialType,
+//   }) async {
+//     try {
+//       isLoading.value = true;
+//       final currentUser = authController.currentUser.value;
+//
+//       // SUPER ADMIN RESTRICTION: Cannot create tokens
+//       if (currentUser?.role == 'super_admin') {
+//         Get.snackbar(
+//           'Access Denied',
+//           'Super Admin cannot create tokens. Only regular users can create tokens.',
+//           backgroundColor: Colors.red,
+//           colorText: Colors.white,
+//           duration: const Duration(seconds: 4),
+//           icon: const Icon(Icons.block, color: Colors.white),
+//         );
+//         return;
+//       }
+//
+//       // ADMIN RESTRICTION: Cannot create tokens
+//       if (currentUser?.role == 'admin') {
+//         Get.snackbar(
+//           'Access Denied',
+//           'Admin cannot create tokens. Only regular users can create tokens.',
+//           backgroundColor: Colors.red,
+//           colorText: Colors.white,
+//           duration: const Duration(seconds: 4),
+//           icon: const Icon(Icons.block, color: Colors.white),
+//         );
+//         return;
+//       }
+//
+//       // Check if token number already exists
+//       final existing = await supabase
+//           .from(SupabaseConfig.tokensTable)
+//           .select()
+//           .eq('token_number', tokenNumber)
+//           .maybeSingle();
+//
+//       if (existing != null) {
+//         Get.snackbar(
+//           'Error',
+//           'Token number already exists. Please use a different number.',
+//           backgroundColor: Colors.orange,
+//           colorText: Colors.white,
+//         );
+//         return;
+//       }
+//
+//       await supabase.from(SupabaseConfig.tokensTable).insert({
+//         'token_number': tokenNumber,
+//         'status': 'active',
+//         'valid_from': validFrom.toIso8601String(),
+//         'valid_until': validUntil.toIso8601String(),
+//         'vehicle_number': vehicleNumber,
+//         'weight_in_kg': weightInKg,
+//         'material_type': materialType,
+//         'created_by': currentUser?.id,
+//         'created_at': DateTime.now().toIso8601String(),
+//       });
+//
+//       await loadTokens();
+//
+//       Get.back();
+//       Get.snackbar(
+//         'Success',
+//         'Token created successfully',
+//         backgroundColor: Colors.green,
+//         colorText: Colors.white,
+//         icon: const Icon(Icons.check_circle, color: Colors.white),
+//       );
+//     } catch (e) {
+//       Get.snackbar('Error', 'Failed to create token: ${e.toString()}');
+//     } finally {
+//       isLoading.value = false;
+//     }
+//   }
+//
+//   Future<void> updateTokenStatus(String tokenId, String status) async {
+//     try {
+//       await supabase
+//           .from(SupabaseConfig.tokensTable)
+//           .update({'status': status})
+//           .eq('id', tokenId);
+//
+//       await loadTokens();
+//       Get.snackbar('Success', 'Token status updated');
+//     } catch (e) {
+//       Get.snackbar('Error', 'Failed to update token: ${e.toString()}');
+//     }
+//   }
+//
+//   // Generate thermal print format for token (58mm width)
+//   Future<void> printToken(TokenModel token) async {
+//     try {
+//       final now = DateTime.now();
+//
+//       // Thermal printer format (58mm paper width - approximately 32 characters)
+//       final tokenData = '''
+// ================================
+//       TOKEN RECEIPT
+// ================================
+// Token No: ${token.tokenNumber}
+// --------------------------------
+// Vehicle: ${token.vehicleNumber ?? 'Not Assigned'}
+// Material: ${token.materialType ?? 'N/A'}
+// Weight: ${token.weightInKg != null ? '${token.weightInKg} Kg' : 'N/A'}
+// --------------------------------
+// Valid From:
+// ${token.validFrom.day.toString().padLeft(2, '0')}/${token.validFrom.month.toString().padLeft(2, '0')}/${token.validFrom.year}
+//
+// Valid Until:
+// ${token.validUntil.day.toString().padLeft(2, '0')}/${token.validUntil.month.toString().padLeft(2, '0')}/${token.validUntil.year}
+// --------------------------------
+// Status: ${token.status.toUpperCase()}
+// --------------------------------
+// Printed On:
+// ${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}
+// ================================
+//      THANK YOU
+// ================================
+//       ''';
+//
+//       // TODO: Integrate with thermal printer package
+//       // For now, just showing in console and snackbar
+//       print(tokenData);
+//
+//       Get.snackbar(
+//         'Print Ready',
+//         'Token ${token.tokenNumber} is ready to print',
+//         backgroundColor: Colors.green,
+//         colorText: Colors.white,
+//         duration: const Duration(seconds: 3),
+//         icon: const Icon(Icons.print, color: Colors.white),
+//       );
+//
+//       // Show print preview dialog
+//       Get.dialog(
+//         AlertDialog(
+//           title: const Text('Token Print Preview'),
+//           content: SingleChildScrollView(
+//             child: Text(
+//               tokenData,
+//               style: const TextStyle(
+//                 fontFamily: 'monospace',
+//                 fontSize: 12,
+//               ),
+//             ),
+//           ),
+//           actions: [
+//             TextButton(
+//               onPressed: () => Get.back(),
+//               child: const Text('Close'),
+//             ),
+//             ElevatedButton.icon(
+//               onPressed: () {
+//                 // TODO: Actual thermal print implementation
+//                 Get.back();
+//                 Get.snackbar('Success', 'Token sent to printer');
+//               },
+//               icon: const Icon(Icons.print),
+//               label: const Text('Print'),
+//             ),
+//           ],
+//         ),
+//       );
+//     } catch (e) {
+//       Get.snackbar('Error', 'Failed to print token: ${e.toString()}');
+//     }
+//   }
+//
+//   Future<void> deleteToken(String tokenId) async {
+//     try {
+//       final currentUser = authController.currentUser.value;
+//
+//       // Only SUPER_ADMIN can delete tokens
+//       if (currentUser?.role != 'super_admin') {
+//         Get.snackbar(
+//           'Access Denied',
+//           'Only Super Admin can delete tokens',
+//           backgroundColor: Colors.red,
+//           colorText: Colors.white,
+//         );
+//         return;
+//       }
+//
+//       await supabase
+//           .from(SupabaseConfig.tokensTable)
+//           .delete()
+//           .eq('id', tokenId);
+//
+//       await loadTokens();
+//       Get.snackbar('Success', 'Token deleted successfully');
+//     } catch (e) {
+//       Get.snackbar('Error', 'Failed to delete token: ${e.toString()}');
+//     }
+//   }}
+// // ============================================
+// // TOKEN CONTROLLER - UPDATED
+// // ============================================
+// // class TokenController extends GetxController {
+// //   final supabase = Supabase.instance.client;
+// //   final authController = Get.find<AuthController>();
+// //
+// //   final RxList<TokenModel> tokens = <TokenModel>[].obs;
+// //   final RxBool isLoading = false.obs;
+// //
+// //   @override
+// //   void onInit() {
+// //     super.onInit();
+// //     loadTokens();
+// //   }
+// //
+// //   Future<void> loadTokens() async {
+// //     try {
+// //       isLoading.value = true;
+// //
+// //       final response = await supabase
+// //           .from(SupabaseConfig.tokensTable)
+// //           .select()
+// //           .order('created_at', ascending: false);
+// //
+// //       tokens.value = (response as List)
+// //           .map((e) => TokenModel.fromJson(e))
+// //           .toList();
+// //     } catch (e) {
+// //       Get.snackbar('Error', 'Failed to load tokens: ${e.toString()}');
+// //     } finally {
+// //       isLoading.value = false;
+// //     }
+// //   }
+// //
+// //   Future<void> createToken({
+// //     required String tokenNumber,
+// //     required DateTime validFrom,
+// //     required DateTime validUntil,
+// //     String? vehicleNumber,
+// //   }) async {
+// //     try {
+// //       isLoading.value = true;
+// //       final currentUser = authController.currentUser.value;
+// //
+// //       // SUPER ADMIN RESTRICTION: Cannot create tokens
+// //       if (currentUser?.role == 'super_admin') {
+// //         Get.snackbar(
+// //           'Error',
+// //           'Super Admin cannot create tokens. Only regular users can create tokens.',
+// //           backgroundColor: Colors.red,
+// //           colorText: Colors.white,
+// //           duration: const Duration(seconds: 4),
+// //         );
+// //         return;
+// //       }
+// //
+// //       await supabase.from(SupabaseConfig.tokensTable).insert({
+// //         'token_number': tokenNumber,
+// //         'status': 'active',
+// //         'valid_from': validFrom.toIso8601String(),
+// //         'valid_until': validUntil.toIso8601String(),
+// //         'vehicle_number': vehicleNumber,
+// //         'created_by': currentUser?.id,
+// //         'created_at': DateTime.now().toIso8601String(),
+// //       });
+// //
+// //       await loadTokens();
+// //
+// //       Get.back();
+// //       Get.snackbar('Success', 'Token created successfully');
+// //     } catch (e) {
+// //       Get.snackbar('Error', 'Failed to create token: ${e.toString()}');
+// //     } finally {
+// //       isLoading.value = false;
+// //     }
+// //   }
+// //
+// //   Future<void> updateTokenStatus(String tokenId, String status) async {
+// //     try {
+// //       await supabase
+// //           .from(SupabaseConfig.tokensTable)
+// //           .update({'status': status})
+// //           .eq('id', tokenId);
+// //
+// //       await loadTokens();
+// //       Get.snackbar('Success', 'Token status updated');
+// //     } catch (e) {
+// //       Get.snackbar('Error', 'Failed to update token: ${e.toString()}');
+// //     }
+// //   }
+// //
+// //   // Generate thermal print format for token
+// //   Future<void> printToken(TokenModel token) async {
+// //     try {
+// //       // This will generate thermal printer format
+// //       // You'll need to integrate with a thermal printer package
+// //       final tokenData = '''
+// // ========================================
+// //            TOKEN RECEIPT
+// // ========================================
+// // Token Number: ${token.tokenNumber}
+// // ----------------------------------------
+// // Vehicle: ${token.vehicleNumber ?? 'Not Assigned'}
+// // Valid From: ${token.validFrom.day}/${token.validFrom.month}/${token.validFrom.year}
+// // Valid Until: ${token.validUntil.day}/${token.validUntil.month}/${token.validUntil.year}
+// // Status: ${token.status.toUpperCase()}
+// // ----------------------------------------
+// // Date: ${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}
+// // Time: ${DateTime.now().hour}:${DateTime.now().minute}
+// // ========================================
+// //       ''';
+// //
+// //       print(tokenData); // For now, just print to console
+// //
+// //       Get.snackbar(
+// //         'Success',
+// //         'Token printed successfully',
+// //         backgroundColor: Colors.green,
+// //         colorText: Colors.white,
+// //       );
+// //     } catch (e) {
+// //       Get.snackbar('Error', 'Failed to print token: ${e.toString()}');
+// //     }
+// //   }
+// // }
+// ============================================
+// USER MANAGEMENT CONTROLLER - COMPLETE UPDATED
+// ============================================
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../config/supabase_config.dart';
+import '../model/user_model.dart';
+import 'auth_controller.dart';
+
+class UserManagementController extends GetxController {
+  final supabase = Supabase.instance.client;
+  final authController = Get.put(AuthController());
+
+  final RxList<UserModel> users = <UserModel>[].obs;
+  final RxBool isLoading = false.obs;
+  final RxInt userCreationCount = 0.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadUsers();
+    checkUserCreationLimit();
+  }
+
+  Future<void> checkUserCreationLimit() async {
+    try {
+      final currentUser = authController.currentUser.value;
+      if (currentUser?.role == 'admin') {
+        final response = await supabase
+            .from(SupabaseConfig.usersTable)
+            .select()
+            .eq('created_by', currentUser!.id)
+            .eq('role', 'user');
+
+        userCreationCount.value = (response as List).length;
+      }
+    } catch (e) {
+      print('Error checking user creation limit: $e');
+    }
+  }
+
+  Future<void> loadUsers() async {
+    try {
+      isLoading.value = true;
+      final currentUser = authController.currentUser.value;
+
+      var query = supabase
+          .from(SupabaseConfig.usersTable)
+          .select();
+
+      // If admin, only show users they created
+      if (currentUser?.role == 'admin') {
+        query = query.eq('created_by', currentUser!.id);
+      }
+
+      final response = await query.order('created_at', ascending: false);
+
+      users.value = (response as List)
+          .map((e) => UserModel.fromJson(e))
+          .toList();
+    } catch (e) {
+      print('Failed to load users: ${e.toString()}');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> createUser({
+    required String email,
+    required String fullName,
+    required String password,
+
+    required String role,
+    String? phone,
+    String? companyName,
+  }) async {
+    try {
+      isLoading.value = true;
+      final currentUser = authController.currentUser.value;
+
+      // ADMIN RESTRICTION: Can only create 1 user
+      if (currentUser?.role == 'admin') {
+        if (userCreationCount.value >= 1) {
+          Get.snackbar(
+            'Error',
+            'Admin can only create 1 user. You have already created a user.',
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            duration: const Duration(seconds: 4),
+          );
+          return;
+        }
+
+        // Admin can only create 'user' role
+        if (role != 'user') {
+          Get.snackbar(
+            'Error',
+            'Admin can only create users with "user" role',
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+          return;
+        }
+      }
+
+      // SUPER ADMIN RESTRICTION: Cannot create users, only admins
+      if (currentUser?.role == 'super_admin' && role == 'user') {
+        Get.snackbar(
+          'Error',
+          'Super Admin cannot create users directly. Only admins can create users.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4),
+        );
+        return;
+      }
+
+      final response = await supabase.functions.invoke(
+        'create-user',
+        body: {
+          'email': email,
+          'password': password,
+          'full_name': fullName,
+          'role': 'user',
+          'phone': phone,
+          'company_name': companyName,
+          'created_by': currentUser?.id,
+        },
+      );
+
+      final data = response.data;
+
+      if (data is Map && data['error'] != null) {
+        throw data['error'];
+      }
+
+      await loadUsers();
+      await checkUserCreationLimit();
+
+      Get.back();
+      Get.snackbar('Success', 'User created successfully');
+    } catch (e) {
+      print('createUser error: $e');
+      Get.snackbar('Error', 'Failed to create user: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // CREATE ADMIN METHOD (for Super Admin)
+  Future<void> createAdmin({
+    required String email,
+    required String password,
+    required String fullName,
+    required String phone,
+    String? companyName,
+  }) async {
+    try {
+      isLoading.value = true;
+      final currentUser = authController.currentUser.value;
+
+      // Only super_admin can create admins
+      if (currentUser?.role != 'super_admin') {
+        Get.snackbar(
+          'Access Denied',
+          'Only Super Admin can create admins',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      final response = await supabase.functions.invoke(
+        'create-user',
+        body: {
+          'email': email,
+          'password': password,
+          'full_name': fullName,
+          'role': 'admin',
+          'phone': phone,
+          'company_name': companyName,
+          'created_by': currentUser?.id,
+        },
+      );
+
+      final data = response.data;
+
+      if (data is Map && data['error'] != null) {
+        throw data['error'];
+      }
+
+      await loadUsers();
+
+      Get.back();
+      Get.snackbar(
+        'Success',
+        'Admin created successfully',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      print('createAdmin error: $e');
+      Get.snackbar('Error', 'Failed to create admin: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> updateUserStatus(String userId, String status) async {
+    try {
+      await supabase
+          .from(SupabaseConfig.usersTable)
+          .update({'status': status})
+          .eq('id', userId);
+
+      await loadUsers();
+      Get.snackbar('Success', 'User status updated');
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to update status: ${e.toString()}');
+    }
+  }
+
+  Future<void> deleteUser(String userId) async {
+    try {
+      isLoading.value = true;
+      final currentUser = authController.currentUser.value;
+
+      // Get the user to check who created them
+      final userToDelete = users.firstWhere((u) => u.id == userId);
+
+      // Client-side validation (optional, server will also validate)
+      if (currentUser?.role == 'admin') {
+        if (userToDelete.createdBy != currentUser!.id) {
+          Get.snackbar(
+            'Error',
+            'You can only delete users you created',
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+          return;
+        }
+      }
+
+      // Call Edge Function instead of direct auth.admin call
+      final response = await supabase.functions.invoke(
+        'delete-user',
+        body: {
+          'userId': userId,
+          'currentUserId': currentUser?.id,
+          'currentUserRole': currentUser?.role,
+        },
+      );
+
+      final data = response.data;
+
+      if (data is Map && data['error'] != null) {
+        throw data['error'];
+      }
+
+      await loadUsers();
+      await checkUserCreationLimit();
+
+      Get.snackbar(
+        'Success',
+        'deleted successfully',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      print('deleteUser error: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to delete user: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+  bool canCreateUser() {
+    final currentUser = authController.currentUser.value;
+
+    if (currentUser?.role == 'admin') {
+      return userCreationCount.value < 1;
+    }
+
+    if (currentUser?.role == 'super_admin') {
+      return true;
+    }
+
+    return false;
+  }
+}
+
+// ============================================
+// TOKEN CONTROLLER - UPDATED
+// ============================================
+class TokenController extends GetxController {
+  final supabase = Supabase.instance.client;
+  final authController = Get.find<AuthController>();
+
+  final RxList<TokenModel> tokens = <TokenModel>[].obs;
+  final RxBool isLoading = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadTokens();
+  }
+
+  Future<void> loadTokens() async {
+    try {
+      isLoading.value = true;
+      final currentUser = authController.currentUser.value;
+
+      var query = supabase.from(SupabaseConfig.tokensTable).select();
+
+      // USER: Only see their own tokens
+      if (currentUser?.role == 'user') {
+        query = query.eq('created_by', currentUser!.id);
+      }
+      // ADMIN & SUPER_ADMIN: See all tokens
+
+      final response = await query.order('created_at', ascending: false);
+
+      tokens.value = (response as List)
+          .map((e) => TokenModel.fromJson(e))
+          .toList();
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to load tokens: ${e.toString()}');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> createToken({
+    required String tokenNumber,
+    required DateTime validFrom,
+    required DateTime validUntil,
+    String? vehicleNumber,
+    double? weightInKg,
+    String? materialType,
+  }) async {
+    try {
+      isLoading.value = true;
+      final currentUser = authController.currentUser.value;
+
+      // SUPER ADMIN RESTRICTION: Cannot create tokens
+      if (currentUser?.role == 'super_admin') {
+        Get.snackbar(
+          'Access Denied',
+          'Super Admin cannot create tokens. Only regular users can create tokens.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4),
+          icon: const Icon(Icons.block, color: Colors.white),
+        );
+        return;
+      }
+
+      // ADMIN RESTRICTION: Cannot create tokens
+      if (currentUser?.role == 'admin') {
+        Get.snackbar(
+          'Access Denied',
+          'Admin cannot create tokens. Only regular users can create tokens.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4),
+          icon: const Icon(Icons.block, color: Colors.white),
+        );
+        return;
+      }
+
+      // Check if token number already exists
+      final existing = await supabase
+          .from(SupabaseConfig.tokensTable)
+          .select()
+          .eq('token_number', tokenNumber)
+          .maybeSingle();
+
+      if (existing != null) {
+        Get.snackbar(
+          'Error',
+          'Token number already exists. Please use a different number.',
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      await supabase.from(SupabaseConfig.tokensTable).insert({
+        'token_number': tokenNumber,
+        'status': 'active',
+        'valid_from': validFrom.toIso8601String(),
+        'valid_until': validUntil.toIso8601String(),
+        'vehicle_number': vehicleNumber,
+        'weight_in_kg': weightInKg,
+        'material_type': materialType,
+        'created_by': currentUser?.id,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+
+      await loadTokens();
+
+      Get.back();
+      Get.snackbar(
+        'Success',
+        'Token created successfully',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        icon: const Icon(Icons.check_circle, color: Colors.white),
+      );
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to create token: ${e.toString()}');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> updateTokenStatus(String tokenId, String status) async {
+    try {
+      await supabase
+          .from(SupabaseConfig.tokensTable)
+          .update({'status': status})
+          .eq('id', tokenId);
+
+      await loadTokens();
+      Get.snackbar('Success', 'Token status updated');
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to update token: ${e.toString()}');
+    }
+  }
+
+
+  Future<void> deleteToken(String tokenId) async {
+    try {
+      final currentUser = authController.currentUser.value;
+
+      if (currentUser?.role != 'super_admin') {
+        Get.snackbar(
+          'Access Denied',
+          'Only Super Admin can delete tokens',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      await supabase
+          .from(SupabaseConfig.tokensTable)
+          .delete()
+          .eq('id', tokenId);
+
+      await loadTokens();
+      Get.snackbar('Success', 'Token deleted successfully');
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to delete token: ${e.toString()}');
+    }
+  }
+}
+
+// ============================================
+// USER MODEL - UPDATED
+// ============================================
+// class UserModel {
+//   final String id;
+//   final String email;
+//   final String fullName;
+//   final String role;
+//   final String status;
+//   final String? phone;
+//   final String? companyName;
+//   final String? createdBy;
+//   final DateTime createdAt;
+//   final DateTime? lastLogin;
+//   final Map<String, dynamic>? deviceInfo;
+//   final String? ipAddress;
+//
+//   UserModel({
+//     required this.id,
+//     required this.email,
+//     required this.fullName,
+//     required this.role,
+//     required this.status,
+//     this.phone,
+//     this.companyName,
+//     this.createdBy,
+//     required this.createdAt,
+//     this.lastLogin,
+//     this.deviceInfo,
+//     this.ipAddress,
+//   });
+//
+//   factory UserModel.fromJson(Map<String, dynamic> json) {
+//     return UserModel(
+//       id: json['id'] as String,
+//       email: json['email'] as String,
+//       fullName: json['full_name'] as String,
+//       role: json['role'] as String,
+//       status: json['status'] as String,
+//       phone: json['phone'] as String?,
+//       companyName: json['company_name'] as String?,
+//       createdBy: json['created_by'] as String?,
+//       createdAt: DateTime.parse(json['created_at'] as String),
+//       lastLogin: json['last_login'] != null
+//           ? DateTime.parse(json['last_login'] as String)
+//           : null,
+//       deviceInfo: json['device_info'] as Map<String, dynamic>?,
+//       ipAddress: json['ip_address'] as String?,
+//     );
+//   }
+//
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'id': id,
+//       'email': email,
+//       'full_name': fullName,
+//       'role': role,
+//       'status': status,
+//       'phone': phone,
+//       'company_name': companyName,
+//       'created_by': createdBy,
+//       'created_at': createdAt.toIso8601String(),
+//       'last_login': lastLogin?.toIso8601String(),
+//       'device_info': deviceInfo,
+//       'ip_address': ipAddress,
+//     };
+//   }
+//
+//   bool get isSuperAdmin => role == 'super_admin';
+//   bool get isAdmin => role == 'admin';
+//   bool get isUser => role == 'user';
+//   bool get isViewer => role == 'viewer';
+//   bool get isActive => status == 'active';
+//   bool get isBlocked => status == 'blocked';
+// }
+//
+// // ============================================
+// // TOKEN MODEL - UPDATED
+// // ============================================
+// class TokenModel {
+//   final String id;
+//   final String tokenNumber;
+//   final String status;
+//   final DateTime validFrom;
+//   final DateTime validUntil;
+//   final String? vehicleNumber;
+//   final double? weightInKg;
+//   final String? materialType;
+//   final String? createdBy;
+//   final DateTime createdAt;
+//   final DateTime? usedAt;
+//   final String? usedBy;
+//
+//   TokenModel({
+//     required this.id,
+//     required this.tokenNumber,
+//     required this.status,
+//     required this.validFrom,
+//     required this.validUntil,
+//     this.vehicleNumber,
+//     this.weightInKg,
+//     this.materialType,
+//     this.createdBy,
+//     required this.createdAt,
+//     this.usedAt,
+//     this.usedBy,
+//   });
+//
+//   factory TokenModel.fromJson(Map<String, dynamic> json) {
+//     return TokenModel(
+//       id: json['id'] as String,
+//       tokenNumber: json['token_number'] as String,
+//       status: json['status'] as String,
+//       validFrom: DateTime.parse(json['valid_from'] as String),
+//       validUntil: DateTime.parse(json['valid_until'] as String),
+//       vehicleNumber: json['vehicle_number'] as String?,
+//       weightInKg: json['weight_in_kg'] != null
+//           ? (json['weight_in_kg'] as num).toDouble()
+//           : null,
+//       materialType: json['material_type'] as String?,
+//       createdBy: json['created_by'] as String?,
+//       createdAt: DateTime.parse(json['created_at'] as String),
+//       usedAt: json['used_at'] != null
+//           ? DateTime.parse(json['used_at'] as String)
+//           : null,
+//       usedBy: json['used_by'] as String?,
+//     );
+//   }
+//
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'id': id,
+//       'token_number': tokenNumber,
+//       'status': status,
+//       'valid_from': validFrom.toIso8601String(),
+//       'valid_until': validUntil.toIso8601String(),
+//       'vehicle_number': vehicleNumber,
+//       'weight_in_kg': weightInKg,
+//       'material_type': materialType,
+//       'created_by': createdBy,
+//       'created_at': createdAt.toIso8601String(),
+//       'used_at': usedAt?.toIso8601String(),
+//       'used_by': usedBy,
+//     };
+//   }
+//
+//   bool get isValid {
+//     final now = DateTime.now();
+//     return status == 'active' &&
+//         now.isAfter(validFrom) &&
+//         now.isBefore(validUntil);
+//   }
+//
+//   bool get isExpired {
+//     final now = DateTime.now();
+//     return status == 'expired' || now.isAfter(validUntil);
+//   }
+//
+//   bool get isUsed => status == 'used';
+//
+//   String get statusDisplay {
+//     if (isUsed) return 'Used';
+//     if (isExpired) return 'Expired';
+//     if (isValid) return 'Active';
+//     return 'Inactive';
+//   }
+// }
