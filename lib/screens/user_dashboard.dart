@@ -806,6 +806,12 @@ class UserDashboard extends StatelessWidget {
                   () => Get.toNamed(AppRoutes.tokenManagement),
             ),
             _buildActionCard(
+              'Print Token Report',
+              Icons.token,
+              AppColors.secondary,
+                  () => Get.toNamed(AppRoutes.tokenReport),
+            ),
+            _buildActionCard(
               'Reports',
               Icons.bar_chart,
               AppColors.warning,

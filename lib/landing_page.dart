@@ -87,23 +87,23 @@ class HomePageScreen extends StatelessWidget {
           const SizedBox(height: 15),
 
           // Title
-          Text(
-            'भारत सरकार',
-            style: GoogleFonts.tiroDevanagariHindi(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.orange.shade900,
-            ),
-          ).animate().fadeIn(delay: 200.ms),
+          // Text(
+          //   'A One Infotech',
+          //   style: GoogleFonts.tiroDevanagariHindi(
+          //     fontSize: 24,
+          //     fontWeight: FontWeight.bold,
+          //     color: Colors.orange.shade900,
+          //   ),
+          // ).animate().fadeIn(delay: 200.ms),
+          //
+          // const SizedBox(height: 5),
 
-          const SizedBox(height: 5),
-
           Text(
-            'GOVERNMENT OF INDIA',
+            'GOVERNMENT APPROVED',
             style: GoogleFonts.cinzel(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.blue.shade900,
+              color: Colors.orange.shade900,
               letterSpacing: 1.5,
             ),
           ).animate().fadeIn(delay: 300.ms),
@@ -155,7 +155,7 @@ class HomePageScreen extends StatelessWidget {
                 const Icon(Icons.verified, color: Colors.white, size: 16),
                 const SizedBox(width: 8),
                 Text(
-                  'चालान प्रबंधन पोर्टल',
+                  'Challan Management Portal',
                   style: GoogleFonts.tiroDevanagariHindi(
                     fontSize: 14,
                     color: Colors.white,
@@ -238,9 +238,9 @@ class HomePageScreen extends StatelessWidget {
 
           // Company Details
           _buildDetailRow(Icons.location_on, 'Address',
-              'Surat, Gujarat, India'),
-          const SizedBox(height: 12),
-          _buildDetailRow(Icons.phone, 'Contact', '+91 XXXXX XXXXX'),
+              'A one infotech, koilwar jamalpur, 802160,India'),
+          // const SizedBox(height: 12),
+          // _buildDetailRow(Icons.phone, 'Contact', '+91 XXXXX XXXXX'),
           const SizedBox(height: 12),
           _buildDetailRow(Icons.email, 'Email', 'info@aoneinfotech.com'),
           const SizedBox(height: 12),
@@ -315,7 +315,7 @@ class HomePageScreen extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'लॉगिन विकल्प चुनें',
+            'Select Login Option',
             style: GoogleFonts.tiroDevanagariHindi(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -323,15 +323,15 @@ class HomePageScreen extends StatelessWidget {
             ),
           ).animate().fadeIn(delay: 800.ms),
 
-          const SizedBox(height: 5),
-
-          Text(
-            'Select Login Option',
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.grey.shade700,
-            ),
-          ).animate().fadeIn(delay: 900.ms),
+          // const SizedBox(height: 5),
+          //
+          // Text(
+          //   'Select Login Option',
+          //   style: GoogleFonts.poppins(
+          //     fontSize: 14,
+          //     color: Colors.grey.shade700,
+          //   ),
+          // ).animate().fadeIn(delay: 900.ms),
 
           const SizedBox(height: 25),
 
@@ -483,7 +483,7 @@ class HomePageScreen extends StatelessWidget {
                 width: 1,
                 color: Colors.grey.shade300,
               ),
-              _buildDeveloperCard('Your Name', Colors.orange),
+              _buildDeveloperCard('Vivek Kumar', Colors.orange),
             ],
           ),
         ],

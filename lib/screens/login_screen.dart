@@ -459,35 +459,35 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2, end: 0),
 
-                    const SizedBox(height: 24),
+                    // const SizedBox(height: 24),/
 
                     // Demo Credentials
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Column(
-                        children: [
-                          Text(
-                            'Credentials:',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Super Admin: admin@example.com / admin123',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ).animate().fadeIn(delay: 600.ms),
+                    // Container(
+                    //   padding: const EdgeInsets.all(16),
+                    //   decoration: BoxDecoration(
+                    //     color: Colors.white.withOpacity(0.2),
+                    //     borderRadius: BorderRadius.circular(12),
+                    //   ),
+                    //   child: const Column(
+                    //     children: [
+                    //       Text(
+                    //         'Credentials:',
+                    //         style: TextStyle(
+                    //           color: Colors.white,
+                    //           fontWeight: FontWeight.bold,
+                    //         ),
+                    //       ),
+                    //       SizedBox(height: 8),
+                    //       Text(
+                    //         'Super Admin: admin@example.com / admin123',
+                    //         style: TextStyle(
+                    //           color: Colors.white,
+                    //           fontSize: 12,
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ).animate().fadeIn(delay: 600.ms),
                   ],
                 ),
               ),

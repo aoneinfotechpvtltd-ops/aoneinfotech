@@ -4,6 +4,7 @@ import '../screens/admin_dashboard.dart';
 import '../screens/challan/challan_list.dart';
 import '../screens/challan/create_challan.dart';
 import '../screens/login_screen.dart';
+import '../screens/print_token_report.dart';
 import '../screens/reprint_screen.dart';
 import '../screens/splash_screen.dart';
 import '../screens/user_dashboard.dart';
@@ -30,6 +31,7 @@ class AppRoutes {
   static const userManagement = '/user-management';
   static const adminManagement = '/admin-management';
   static const reports = '/reports';
+  static const tokenReport = '/token-report';
   static const tokenManagement = '/token-management';
   static const systemSettings = '/system-settings';
   static const reprintRequests = '/reprint-requests';
@@ -124,6 +126,12 @@ Get.put(DashboardController());
       page: () => const ReportsScreen(),
       binding: BindingsBuilder(() {
         Get.lazyPut(() => ReportsController());
+      }),
+    ),GetPage(
+      name: tokenReport,
+      page: () => const PrintTokenReportScreen(),
+      binding: BindingsBuilder(() {
+        Get.put( TokenController());
       }),
     ),
     GetPage(

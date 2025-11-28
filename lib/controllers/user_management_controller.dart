@@ -976,6 +976,13 @@ import '../config/supabase_config.dart';
 import '../model/user_model.dart';
 import 'auth_controller.dart';
 
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../config/supabase_config.dart';
+import '../model/user_model.dart';
+import 'auth_controller.dart';
+
 class UserManagementController extends GetxController {
   final supabase = Supabase.instance.client;
   final authController = Get.put(AuthController());
@@ -983,16 +990,12 @@ class UserManagementController extends GetxController {
   final RxList<UserModel> users = <UserModel>[].obs;
   final RxBool isLoading = false.obs;
   final RxInt userCreationCount = 0.obs;
-  final RxInt companyCreationCount = 0.obs;
-  final RxList<String> existingCompanies = <String>[].obs;
 
   @override
   void onInit() {
     super.onInit();
     loadUsers();
     checkUserCreationLimit();
-    checkCompanyCreationLimit();
-    loadExistingCompanies();
   }
 
   Future<void> checkUserCreationLimit() async {
@@ -1003,52 +1006,12 @@ class UserManagementController extends GetxController {
             .from(SupabaseConfig.usersTable)
             .select()
             .eq('created_by', currentUser!.id)
-            .eq('role', 'user')
-            .eq('user_type', 'user'); // Only count actual users, not companies
+            .eq('role', 'user');
 
         userCreationCount.value = (response as List).length;
       }
     } catch (e) {
       print('Error checking user creation limit: $e');
-    }
-  }
-
-  Future<void> checkCompanyCreationLimit() async {
-    try {
-      final currentUser = authController.currentUser.value;
-      if (currentUser?.role == 'admin') {
-        final response = await supabase
-            .from(SupabaseConfig.usersTable)
-            .select()
-            .eq('created_by', currentUser!.id)
-            .eq('role', 'user')
-            .eq('user_type', 'company'); // Only count companies
-
-        companyCreationCount.value = (response as List).length;
-      }
-    } catch (e) {
-      print('Error checking company creation limit: $e');
-    }
-  }
-
-  Future<void> loadExistingCompanies() async {
-    try {
-      final currentUser = authController.currentUser.value;
-      if (currentUser?.role == 'admin') {
-        final response = await supabase
-            .from(SupabaseConfig.usersTable)
-            .select('company_name')
-            .eq('created_by', currentUser!.id)
-            .eq('user_type', 'company')
-            .not('company_name', 'is', null);
-
-        existingCompanies.value = (response as List)
-            .map((e) => e['company_name'] as String)
-            .toSet()
-            .toList();
-      }
-    } catch (e) {
-      print('Error loading existing companies: $e');
     }
   }
 
@@ -1073,23 +1036,21 @@ class UserManagementController extends GetxController {
     }
   }
 
+  // ADMIN creates USERS (max 2)
   Future<void> createUser({
     required String email,
     required String fullName,
     required String password,
-    required String userType, // 'user' or 'company'
     String? phone,
     String? companyName,
-    String? selectedCompany,
   }) async {
     try {
       isLoading.value = true;
       final currentUser = authController.currentUser.value;
 
-      // ADMIN RESTRICTIONS
+      // ADMIN RESTRICTION: Can only create 2 users
       if (currentUser?.role == 'admin') {
-        // Check user limit (max 2 users)
-        if (userType == 'user' && userCreationCount.value >= 2) {
+        if (userCreationCount.value >= 2) {
           Get.snackbar(
             'Limit Reached',
             'Admin can only create 2 users. You have already created ${userCreationCount.value} users.',
@@ -1100,50 +1061,18 @@ class UserManagementController extends GetxController {
           );
           return;
         }
-
-        // Check company limit (max 1 company)
-        if (userType == 'company' && companyCreationCount.value >= 1) {
-          Get.snackbar(
-            'Limit Reached',
-            'Admin can only create 1 company. You have already created a company.',
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-            duration: const Duration(seconds: 4),
-            icon: const Icon(Icons.block, color: Colors.white),
-          );
-          return;
-        }
-
-        // Validate company name for new company
-        if (userType == 'company' && (companyName?.trim().isEmpty ?? true)) {
-          Get.snackbar(
-            'Error',
-            'Company name is required when creating a company',
-            backgroundColor: Colors.orange,
-            colorText: Colors.white,
-          );
-          return;
-        }
       }
 
-      // SUPER ADMIN RESTRICTION
+      // SUPER ADMIN RESTRICTION: Cannot create regular users
       if (currentUser?.role == 'super_admin') {
         Get.snackbar(
           'Access Denied',
-          'Super Admin cannot create users or companies directly. Only admins can create them.',
+          'Super Admin cannot create regular users. Only admins can create users.',
           backgroundColor: Colors.red,
           colorText: Colors.white,
           duration: const Duration(seconds: 4),
         );
         return;
-      }
-
-      // Determine final company name
-      String? finalCompanyName;
-      if (userType == 'company') {
-        finalCompanyName = companyName?.trim();
-      } else if (userType == 'user' && selectedCompany != null) {
-        finalCompanyName = selectedCompany;
       }
 
       final response = await supabase.functions.invoke(
@@ -1153,9 +1082,9 @@ class UserManagementController extends GetxController {
           'password': password,
           'full_name': fullName,
           'role': 'user',
-          'user_type': userType,
+          'user_type': 'user',
           'phone': phone,
-          'company_name': finalCompanyName,
+          'company_name': companyName,
           'created_by': currentUser?.id,
         },
       );
@@ -1168,30 +1097,30 @@ class UserManagementController extends GetxController {
 
       await loadUsers();
       await checkUserCreationLimit();
-      await checkCompanyCreationLimit();
-      await loadExistingCompanies();
 
       Get.back();
       Get.snackbar(
         'Success',
-        userType == 'company' ? 'Company created successfully' : 'User created successfully',
+        'User created successfully',
         backgroundColor: Colors.green,
         colorText: Colors.white,
         icon: const Icon(Icons.check_circle, color: Colors.white),
       );
     } catch (e) {
       print('createUser error: $e');
-      Get.snackbar('Error', 'Failed to create: $e');
+      Get.snackbar('Error', 'Failed to create user: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> createAdmin({
+  // SUPER ADMIN creates ADMINS and COMPANIES (no limit)
+  Future<void> createAdminOrCompany({
     required String email,
     required String password,
     required String fullName,
     required String phone,
+    required String type, // 'admin' or 'company'
     String? companyName,
   }) async {
     try {
@@ -1201,8 +1130,19 @@ class UserManagementController extends GetxController {
       if (currentUser?.role != 'super_admin') {
         Get.snackbar(
           'Access Denied',
-          'Only Super Admin can create admins',
+          'Only Super Admin can create admins and companies',
           backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      // Validate company name for company type
+      if (type == 'company' && (companyName?.trim().isEmpty ?? true)) {
+        Get.snackbar(
+          'Error',
+          'Company name is required when creating a company',
+          backgroundColor: Colors.orange,
           colorText: Colors.white,
         );
         return;
@@ -1215,6 +1155,7 @@ class UserManagementController extends GetxController {
           'password': password,
           'full_name': fullName,
           'role': 'admin',
+          'user_type': 'user',
           'phone': phone,
           'company_name': companyName,
           'created_by': currentUser?.id,
@@ -1232,13 +1173,14 @@ class UserManagementController extends GetxController {
       Get.back();
       Get.snackbar(
         'Success',
-        'Admin created successfully',
+        '${type == 'admin' ? 'Admin' : 'Company'} created successfully',
         backgroundColor: Colors.green,
         colorText: Colors.white,
       );
     } catch (e) {
-      print('createAdmin error: $e');
-      Get.snackbar('Error', 'Failed to create admin: $e');
+      print('createAdminOrCompany error: $e');
+      Get.snackbar('Error', 'Email already registered try new one.');
+      // Get.snackbar('Error', 'Failed to create ${type}: $e');
     } finally {
       isLoading.value = false;
     }
@@ -1265,11 +1207,35 @@ class UserManagementController extends GetxController {
 
       final userToDelete = users.firstWhere((u) => u.id == userId);
 
+      // ADMIN: Can only delete users they created (role='user')
       if (currentUser?.role == 'admin') {
         if (userToDelete.createdBy != currentUser!.id) {
           Get.snackbar(
             'Error',
             'You can only delete users you created',
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+          return;
+        }
+
+        if (userToDelete.role != 'user') {
+          Get.snackbar(
+            'Error',
+            'Admin can only delete regular users',
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+          return;
+        }
+      }
+
+      // SUPER ADMIN: Can delete admins and companies they created
+      if (currentUser?.role == 'super_admin') {
+        if (userToDelete.createdBy != currentUser!.id) {
+          Get.snackbar(
+            'Error',
+            'You can only delete admins/companies you created',
             backgroundColor: Colors.red,
             colorText: Colors.white,
           );
@@ -1294,8 +1260,6 @@ class UserManagementController extends GetxController {
 
       await loadUsers();
       await checkUserCreationLimit();
-      await checkCompanyCreationLimit();
-      await loadExistingCompanies();
 
       Get.snackbar(
         'Success',
@@ -1323,24 +1287,14 @@ class UserManagementController extends GetxController {
       return userCreationCount.value < 2;
     }
 
-    if (currentUser?.role == 'super_admin') {
-      return true;
-    }
-
     return false;
   }
 
-  bool canCreateCompany() {
+  bool canCreateAdminOrCompany() {
     final currentUser = authController.currentUser.value;
-
-    if (currentUser?.role == 'admin') {
-      return companyCreationCount.value < 1;
-    }
-
-    return false;
+    return currentUser?.role == 'super_admin';
   }
 }
-
 
 class TokenController extends GetxController {
   final supabase = Supabase.instance.client;
@@ -1642,7 +1596,8 @@ class TokenController extends GetxController {
         (token.vehicleNumber?.toLowerCase().contains(lowerQuery) ?? false))
         .toList();
   }
-}// ============================================
+}
+// ============================================
 // TOKEN CONTROLLER - UPDATED
 // ============================================
 // class TokenController extends GetxController {
