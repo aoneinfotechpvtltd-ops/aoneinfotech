@@ -934,18 +934,19 @@ class AdminDashboard extends StatelessWidget {
               const SizedBox(height: 20),
               _buildQuickActions(context),
               const SizedBox(height: 20),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _buildRecentChallansSection(dashboardController),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildRecentActivitiesSection(dashboardController),
-                  ),
-                ],
-              ),
+              _buildRecentChallansSection(dashboardController),
+              // Row(
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   children: [
+              //     Expanded(
+              //       child: _buildRecentChallansSection(dashboardController),
+              //     ),
+              //     const SizedBox(width: 16),
+              //     Expanded(
+              //       child: _buildRecentActivitiesSection(dashboardController),
+              //     ),
+              //   ],
+              // ),
               SizedBox(height: 150,)
             ],
           ),
@@ -1258,12 +1259,12 @@ class AdminDashboard extends StatelessWidget {
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
           children: [
-            _buildActionCard(
-              'Create Challan',
-              Icons.add_circle_outline,
-              AppColors.primary,
-                  () => Get.toNamed(AppRoutes.createChallan),
-            ),
+            // _buildActionCard(
+            //   'Create Challan',
+            //   Icons.add_circle_outline,
+            //   AppColors.primary,
+            //       () => Get.toNamed(AppRoutes.createChallan),
+            // ),
             _buildActionCard(
               'Manage Users',
               Icons.people_outline,
@@ -1280,7 +1281,7 @@ class AdminDashboard extends StatelessWidget {
               'All Challans',
               Icons.list_alt,
               AppColors.warning,
-                  () => Get.toNamed(AppRoutes.challanList),
+                  () => Get.toNamed(AppRoutes.challanAdminList),
             ),
             _buildActionCard(
               'Reports',

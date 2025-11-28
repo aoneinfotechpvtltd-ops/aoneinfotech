@@ -817,7 +817,7 @@ class CreateChallanScreen extends StatelessWidget {
                   ),
                 )
                     : const Text(
-                  'Create Challan & Print',
+                  'Create Challan',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

@@ -1,3 +1,4 @@
+import 'package:aoneinfotech/landing_page.dart';
 import 'package:get/get.dart';
 import '../screens/admin_dashboard.dart';
 import '../screens/challan/challan_list.dart';
@@ -17,12 +18,15 @@ import '../controllers/reports_controller.dart';
 class AppRoutes {
   static const splash = '/';
   static const login = '/login';
+  static const home = '/home';
   static const superAdminDashboard = '/super-admin-dashboard';
   static const adminDashboard = '/admin-dashboard';
   static const userDashboard = '/user-dashboard';
   static const createChallan = '/create-challan';
   static const challanList = '/challan-list';
+  static const challanAdminList = '/challan-admin-list';
   static const challanDetail = '/challan-detail';
+  static const challanAdminDetail = '/challan-admin-detail';
   static const userManagement = '/user-management';
   static const adminManagement = '/admin-management';
   static const reports = '/reports';
@@ -33,7 +37,10 @@ class AppRoutes {
   static final routes = [
     GetPage(
       name: splash,
-      page: () => const SplashScreen(),
+      page: () => const HomePageScreen(),
+    ),GetPage(
+      name: home,
+      page: () => const HomePageScreen(),
     ),
     GetPage(
       name: login,
@@ -79,8 +86,21 @@ Get.put(DashboardController());
       }),
     ),
     GetPage(
+      name: challanAdminList,
+      page: () => const ChallanAdminListScreen(),
+      binding: BindingsBuilder(() {
+        Get.put(ChallanController());
+      }),
+    ),
+    GetPage(
       name: challanDetail,
       page: () => const ChallanDetailScreen(),
+      binding: BindingsBuilder(() {
+        Get.put(ChallanController());
+      }),
+    ), GetPage(
+      name: challanAdminDetail,
+      page: () => const ChallanAdminDetailScreen(),
       binding: BindingsBuilder(() {
         Get.put(ChallanController());
       }),

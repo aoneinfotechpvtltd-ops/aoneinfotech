@@ -693,7 +693,7 @@ class ChallanController extends GetxController {
       );
 
       selectedChallan.value = newChallan;
-      await printChallan(newChallan.id);
+      // await printChallan(newChallan.id);
     } catch (e) {
       print('tokk${e.toString()}');
       Get.snackbar(

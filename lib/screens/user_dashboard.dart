@@ -574,8 +574,8 @@ class UserDashboard extends StatelessWidget {
               _buildQuickActions(context, tokenController),
               const SizedBox(height: 20),
               _buildTokensSection(tokenController),
-              const SizedBox(height: 20),
-              _buildRecentChallansSection(dashboardController),
+              // const SizedBox(height: 20),
+              // _buildRecentChallansSection(dashboardController),
               SizedBox(height: 150,)
             ],
           ),
@@ -586,7 +586,7 @@ class UserDashboard extends StatelessWidget {
         children: [
           FloatingActionButton(
             heroTag: 'token',
-            onPressed: () => _showCreateTokenDialog(context, tokenController),
+            onPressed: () => _showAddTokenDialog(context, tokenController),
             backgroundColor: AppColors.info,
             child: const Icon(Icons.token),
             tooltip: 'Create Token',
@@ -791,7 +791,7 @@ class UserDashboard extends StatelessWidget {
               'Create Token',
               Icons.token,
               AppColors.info,
-                  () => _showCreateTokenDialog(context, tokenController),
+                  () => _showAddTokenDialog(context, tokenController),
             ),
             _buildActionCard(
               'View Challans',
@@ -917,7 +917,7 @@ class UserDashboard extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
-                      onPressed: () => _showCreateTokenDialog(Get.context!, controller),
+                      onPressed: () => _showAddTokenDialog(Get.context!, controller),
                       icon: const Icon(Icons.add),
                       label: const Text('Create Your First Token'),
                       style: ElevatedButton.styleFrom(
@@ -1177,10 +1177,8 @@ class UserDashboard extends StatelessWidget {
       ),
     );
   }
-
-  void _showCreateTokenDialog(BuildContext context, TokenController controller) {
+  void _showAddTokenDialog(BuildContext context, TokenController controller) {
     final formKey = GlobalKey<FormState>();
-    final tokenNumberController = TextEditingController();
     final vehicleNumberController = TextEditingController();
     final weightController = TextEditingController();
     final materialController = TextEditingController();
@@ -1190,37 +1188,33 @@ class UserDashboard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.info.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(Icons.token, color: AppColors.info),
-            ),
-            const SizedBox(width: 12),
-            const Text('Create New Token'),
-          ],
-        ),
+        title: const Text('Create New Token'),
         content: Form(
           key: formKey,
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextFormField(
-                  controller: tokenNumberController,
-                  decoration: const InputDecoration(
-                    labelText: 'Token Number *',
-                    prefixIcon: Icon(Icons.tag),
-                    hintText: 'e.g., TKN001',
-                    border: OutlineInputBorder(),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.info.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  textCapitalization: TextCapitalization.characters,
-                  validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+                  child: const Column(
+                    children: [
+                      Icon(Icons.info, color: AppColors.info),
+                      SizedBox(height: 8),
+                      Text(
+                        'Token Number & Serial Number will be auto-generated',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.info,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -1229,27 +1223,24 @@ class UserDashboard extends StatelessWidget {
                     labelText: 'Vehicle Number',
                     prefixIcon: Icon(Icons.local_shipping),
                     hintText: 'e.g., GJ01AB1234',
-                    border: OutlineInputBorder(),
                   ),
                   textCapitalization: TextCapitalization.characters,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 TextFormField(
                   controller: materialController,
                   decoration: const InputDecoration(
                     labelText: 'Material Type',
                     prefixIcon: Icon(Icons.inventory_2),
                     hintText: 'e.g., Sand, Gravel',
-                    border: OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 TextFormField(
                   controller: weightController,
                   decoration: const InputDecoration(
                     labelText: 'Weight (Kg)',
                     prefixIcon: Icon(Icons.scale),
-                    border: OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
                 ),
@@ -1257,24 +1248,17 @@ class UserDashboard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.info.withOpacity(0.1),
+                    color: AppColors.success.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.info.withOpacity(0.3)),
                   ),
                   child: Column(
                     children: [
-                      const Row(
-                        children: [
-                          Icon(Icons.calendar_today, size: 16, color: AppColors.info),
-                          SizedBox(width: 8),
-                          Text(
-                            'Validity Period',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                      const Text(
+                        'Validity Period',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Obx(() => Text(
@@ -1294,11 +1278,10 @@ class UserDashboard extends StatelessWidget {
             onPressed: () => Get.back(),
             child: const Text('Cancel'),
           ),
-          ElevatedButton.icon(
+          ElevatedButton(
             onPressed: () {
               if (formKey.currentState!.validate()) {
                 controller.createToken(
-                  tokenNumber: tokenNumberController.text.trim().toUpperCase(),
                   validFrom: validFrom.value,
                   validUntil: validUntil.value,
                   vehicleNumber: vehicleNumberController.text.trim().isNotEmpty
@@ -1313,16 +1296,162 @@ class UserDashboard extends StatelessWidget {
                 );
               }
             },
-            icon: const Icon(Icons.add),
-            label: const Text('Create & Print'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.info,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             ),
+            child: const Text('Create & Print'),
           ),
         ],
       ),
     );
   }
+
+  // void _showCreateTokenDialog(BuildContext context, TokenController controller) {
+  //   final formKey = GlobalKey<FormState>();
+  //   final tokenNumberController = TextEditingController();
+  //   final vehicleNumberController = TextEditingController();
+  //   final weightController = TextEditingController();
+  //   final materialController = TextEditingController();
+  //   final validFrom = DateTime.now().obs;
+  //   final validUntil = DateTime.now().add(const Duration(days: 30)).obs;
+  //
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+  //       title: Row(
+  //         children: [
+  //           Container(
+  //             padding: const EdgeInsets.all(8),
+  //             decoration: BoxDecoration(
+  //               color: AppColors.info.withOpacity(0.1),
+  //               borderRadius: BorderRadius.circular(8),
+  //             ),
+  //             child: const Icon(Icons.token, color: AppColors.info),
+  //           ),
+  //           const SizedBox(width: 12),
+  //           const Text('Create New Token'),
+  //         ],
+  //       ),
+  //       content: Form(
+  //         key: formKey,
+  //         child: SingleChildScrollView(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               // TextFormField(
+  //               //   controller: tokenNumberController,
+  //               //   decoration: const InputDecoration(
+  //               //     labelText: 'Token Number *',
+  //               //     prefixIcon: Icon(Icons.tag),
+  //               //     hintText: 'e.g., TKN001',
+  //               //     border: OutlineInputBorder(),
+  //               //   ),
+  //               //   textCapitalization: TextCapitalization.characters,
+  //               //   validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+  //               // ),
+  //               // const SizedBox(height: 16),
+  //               TextFormField(
+  //                 controller: vehicleNumberController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Vehicle Number',
+  //                   prefixIcon: Icon(Icons.local_shipping),
+  //                   hintText: 'e.g., GJ01AB1234',
+  //                   border: OutlineInputBorder(),
+  //                 ),
+  //                 textCapitalization: TextCapitalization.characters,
+  //               ),
+  //               const SizedBox(height: 16),
+  //               TextFormField(
+  //                 controller: materialController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Material Type',
+  //                   prefixIcon: Icon(Icons.inventory_2),
+  //                   hintText: 'e.g., Sand, Gravel',
+  //                   border: OutlineInputBorder(),
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 16),
+  //               TextFormField(
+  //                 controller: weightController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Weight (Kg)',
+  //                   prefixIcon: Icon(Icons.scale),
+  //                   border: OutlineInputBorder(),
+  //                 ),
+  //                 keyboardType: TextInputType.number,
+  //               ),
+  //               const SizedBox(height: 16),
+  //               Container(
+  //                 padding: const EdgeInsets.all(12),
+  //                 decoration: BoxDecoration(
+  //                   color: AppColors.info.withOpacity(0.1),
+  //                   borderRadius: BorderRadius.circular(8),
+  //                   border: Border.all(color: AppColors.info.withOpacity(0.3)),
+  //                 ),
+  //                 child: Column(
+  //                   children: [
+  //                     const Row(
+  //                       children: [
+  //                         Icon(Icons.calendar_today, size: 16, color: AppColors.info),
+  //                         SizedBox(width: 8),
+  //                         Text(
+  //                           'Validity Period',
+  //                           style: TextStyle(
+  //                             fontWeight: FontWeight.bold,
+  //                             fontSize: 14,
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     const SizedBox(height: 8),
+  //                     Obx(() => Text(
+  //                       'Valid for 30 days from ${validFrom.value.day}/${validFrom.value.month}/${validFrom.value.year}',
+  //                       style: const TextStyle(fontSize: 12),
+  //                       textAlign: TextAlign.center,
+  //                     )),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Get.back(),
+  //           child: const Text('Cancel'),
+  //         ),
+  //         ElevatedButton.icon(
+  //           onPressed: () {
+  //             if (formKey.currentState!.validate()) {
+  //               controller.createToken(
+  //                 // tokenNumber: tokenNumberController.text.trim().toUpperCase(),
+  //                 validFrom: validFrom.value,
+  //                 validUntil: validUntil.value,
+  //                 vehicleNumber: vehicleNumberController.text.trim().isNotEmpty
+  //                     ? vehicleNumberController.text.trim().toUpperCase()
+  //                     : null,
+  //                 weightInKg: weightController.text.trim().isNotEmpty
+  //                     ? double.tryParse(weightController.text.trim())
+  //                     : null,
+  //                 materialType: materialController.text.trim().isNotEmpty
+  //                     ? materialController.text.trim()
+  //                     : null,
+  //               );
+  //             }
+  //           },
+  //           icon: const Icon(Icons.add),
+  //           label: const Text('Create & Print'),
+  //           style: ElevatedButton.styleFrom(
+  //             backgroundColor: AppColors.info,
+  //             foregroundColor: Colors.white,
+  //             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

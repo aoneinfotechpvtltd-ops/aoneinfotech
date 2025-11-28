@@ -108,7 +108,7 @@ class AuthController extends GetxController {
       currentUser.value = null;
       isLoggedIn.value = false;
 
-      Get.offAllNamed(AppRoutes.login);
+      Get.offAllNamed(AppRoutes.splash);
 
       Get.snackbar(
         'Success',

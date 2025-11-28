@@ -9,339 +9,748 @@ import '../model/user_model.dart';
 import '../utilis/app_colors.dart';
 
 // USER MANAGEMENT SCREEN
+// class UserManagementScreen extends StatelessWidget {
+//   const UserManagementScreen({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final controller = Get.find<UserManagementController>();
+//
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('User Management'),
+//         backgroundColor: AppColors.primary,
+//       ),
+//       body: Obx(() {
+//         if (controller.isLoading.value) {
+//           return const Center(child: CircularProgressIndicator());
+//         }
+//
+//         return RefreshIndicator(
+//           onRefresh: controller.loadUsers,
+//           child: ListView.builder(
+//             padding: const EdgeInsets.all(16),
+//             itemCount: controller.users.length,
+//             itemBuilder: (context, index) {
+//               final user = controller.users[index];
+//               return _buildUserCard(user, controller);
+//             },
+//           ),
+//         );
+//       }),
+//       floatingActionButton: FloatingActionButton.extended(
+//         onPressed: () => _showAddUserDialog(context, controller),
+//         backgroundColor: AppColors.primary,
+//         icon: const Icon(Icons.add),
+//         label: const Text('Add User'),
+//       ),
+//     );
+//   }
+//
+//   Widget _buildUserCard(UserModel user, UserManagementController controller) {
+//     Color roleColor;
+//     switch (user.role) {
+//       case 'super_admin':
+//         roleColor = AppColors.superAdmin;
+//         break;
+//       case 'admin':
+//         roleColor = AppColors.admin;
+//         break;
+//       case 'user':
+//         roleColor = AppColors.user;
+//         break;
+//       default:
+//         roleColor = AppColors.viewer;
+//     }
+//
+//     return Card(
+//       margin: const EdgeInsets.only(bottom: 12),
+//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+//       child: Padding(
+//         padding: const EdgeInsets.all(16),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Row(
+//               children: [
+//                 CircleAvatar(
+//                   backgroundColor: roleColor.withOpacity(0.1),
+//                   child: Text(
+//                     user.fullName[0].toUpperCase(),
+//                     style: TextStyle(
+//                       color: roleColor,
+//                       fontWeight: FontWeight.bold,
+//                     ),
+//                   ),
+//                 ),
+//                 const SizedBox(width: 12),
+//                 Expanded(
+//                   child: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Text(
+//                         user.fullName,
+//                         style: const TextStyle(
+//                           fontWeight: FontWeight.bold,
+//                           fontSize: 16,
+//                         ),
+//                       ),
+//                       const SizedBox(height: 4),
+//                       Text(
+//                         user.email,
+//                         style: const TextStyle(
+//                           fontSize: 12,
+//                           color: AppColors.textSecondary,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//                 Container(
+//                   padding: const EdgeInsets.symmetric(
+//                     horizontal: 12,
+//                     vertical: 6,
+//                   ),
+//                   decoration: BoxDecoration(
+//                     color: roleColor.withOpacity(0.1),
+//                     borderRadius: BorderRadius.circular(20),
+//                   ),
+//                   child: Text(
+//                     user.role.toUpperCase().replaceAll('_', ' '),
+//                     style: TextStyle(
+//                       fontSize: 10,
+//                       fontWeight: FontWeight.bold,
+//                       color: roleColor,
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             const Divider(height: 24),
+//             Row(
+//               children: [
+//                 Expanded(
+//                   child: _buildInfoChip(
+//                     user.isActive ? 'Active' : 'Blocked',
+//                     user.isActive ? Icons.check_circle : Icons.block,
+//                     user.isActive ? AppColors.success : AppColors.error,
+//                   ),
+//                 ),
+//                 const SizedBox(width: 8),
+//                 if (user.phone != null)
+//                   Expanded(
+//                     child: _buildInfoChip(
+//                       user.phone!,
+//                       Icons.phone,
+//                       AppColors.info,
+//                     ),
+//                   ),
+//               ],
+//             ),
+//             const SizedBox(height: 12),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.end,
+//               children: [
+//                 TextButton.icon(
+//                   onPressed: () {
+//                     controller.updateUserStatus(
+//                       user.id,
+//                       user.isActive ? 'blocked' : 'active',
+//                     );
+//                   },
+//                   icon: Icon(
+//                     user.isActive ? Icons.block : Icons.check_circle,
+//                     size: 18,
+//                   ),
+//                   label: Text(user.isActive ? 'Block' : 'Activate'),
+//                   style: TextButton.styleFrom(
+//                     foregroundColor:
+//                     user.isActive ? AppColors.error : AppColors.success,
+//                   ),
+//                 ),
+//                 const SizedBox(width: 8),
+//                 IconButton(
+//                   onPressed: () => _showDeleteConfirmation(controller, user),
+//                   icon: const Icon(Icons.delete_outline),
+//                   color: AppColors.error,
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+//   Widget _buildInfoChip(String label, IconData icon, Color color) {
+//     return Container(
+//       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+//       decoration: BoxDecoration(
+//         color: color.withOpacity(0.1),
+//         borderRadius: BorderRadius.circular(8),
+//       ),
+//       child: Row(
+//         mainAxisSize: MainAxisSize.min,
+//         children: [
+//           Icon(icon, size: 14, color: color),
+//           const SizedBox(width: 6),
+//           Flexible(
+//             child: Text(
+//               label,
+//               style: TextStyle(
+//                 fontSize: 12,
+//                 fontWeight: FontWeight.w600,
+//                 color: color,
+//               ),
+//               overflow: TextOverflow.ellipsis,
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   // void _showAddUserDialog(BuildContext context, UserManagementController controller) {
+//   //   final formKey = GlobalKey<FormState>();
+//   //   final emailController = TextEditingController();
+//   //   final nameController = TextEditingController();
+//   //   final phoneController = TextEditingController();
+//   //   final selectedRole = 'user'.obs;
+//   //
+//   //   showDialog(
+//   //     context: context,
+//   //     builder: (context) => AlertDialog(
+//   //       title: const Text('Add New User'),
+//   //       content: Form(
+//   //         key: formKey,
+//   //         child: SingleChildScrollView(
+//   //           child: Column(
+//   //             mainAxisSize: MainAxisSize.min,
+//   //             children: [
+//   //               TextFormField(
+//   //                 controller: nameController,
+//   //                 decoration: const InputDecoration(
+//   //                   labelText: 'Full Name *',
+//   //                   prefixIcon: Icon(Icons.person),
+//   //                 ),
+//   //                 validator: (v) =>
+//   //                 v?.isEmpty ?? true ? 'Required' : null,
+//   //               ),
+//   //               const SizedBox(height: 16),
+//   //               TextFormField(
+//   //                 controller: emailController,
+//   //                 decoration: const InputDecoration(
+//   //                   labelText: 'Email *',
+//   //                   prefixIcon: Icon(Icons.email),
+//   //                 ),
+//   //                 keyboardType: TextInputType.emailAddress,
+//   //                 validator: (v) {
+//   //                   if (v?.isEmpty ?? true) return 'Required';
+//   //                   if (!v!.contains('@')) return 'Invalid email';
+//   //                   return null;
+//   //                 },
+//   //               ),
+//   //               const SizedBox(height: 16),
+//   //               TextFormField(
+//   //                 controller: phoneController,
+//   //                 decoration: const InputDecoration(
+//   //                   labelText: 'Phone',
+//   //                   prefixIcon: Icon(Icons.phone),
+//   //                 ),
+//   //                 keyboardType: TextInputType.phone,
+//   //               ),
+//   //               const SizedBox(height: 16),
+//   //               Obx(() => DropdownButtonFormField<String>(
+//   //                 value: selectedRole.value,
+//   //                 decoration: const InputDecoration(
+//   //                   labelText: 'Role *',
+//   //                   prefixIcon: Icon(Icons.shield),
+//   //                 ),
+//   //                 items: ['user', 'admin']
+//   //                     .map((role) => DropdownMenuItem(
+//   //                   value: role,
+//   //                   child: Text(role.toUpperCase()),
+//   //                 ))
+//   //                     .toList(),
+//   //                 onChanged: (value) {
+//   //                   if (value != null) selectedRole.value = value;
+//   //                 },
+//   //               )),
+//   //             ],
+//   //           ),
+//   //         ),
+//   //       ),
+//   //       actions: [
+//   //         TextButton(
+//   //           onPressed: () => Get.back(),
+//   //           child: const Text('Cancel'),
+//   //         ),
+//   //         ElevatedButton(
+//   //           onPressed: () {
+//   //             if (formKey.currentState!.validate()) {
+//   //               controller.createUser(
+//   //                 email: emailController.text.trim(),
+//   //                 fullName: nameController.text.trim(),
+//   //                 role: selectedRole.value,
+//   //                 phone: phoneController.text.trim().isNotEmpty
+//   //                     ? phoneController.text.trim()
+//   //                     : null,
+//   //               );
+//   //             }
+//   //           },
+//   //           style: ElevatedButton.styleFrom(
+//   //             backgroundColor: AppColors.primary,
+//   //             foregroundColor: Colors.white,
+//   //           ),
+//   //           child: const Text('Add User'),
+//   //         ),
+//   //       ],
+//   //     ),
+//   //   );
+//   // }
+//   void _showAddUserDialog(
+//       BuildContext context,
+//       UserManagementController controller,
+//       ) {
+//     final formKey = GlobalKey<FormState>();
+//     final emailController = TextEditingController();
+//     final nameController = TextEditingController();
+//     final phoneController = TextEditingController();
+//     final companyController = TextEditingController();
+//     final passwordController = TextEditingController();   // 👈 NEW
+//     final selectedRole = 'user'.obs;
+//
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: const Text('Add New User'),
+//         content: Form(
+//           key: formKey,
+//           child: SingleChildScrollView(
+//             child: Column(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 // Full Name
+//                 TextFormField(
+//                   controller: nameController,
+//                   decoration: const InputDecoration(
+//                     labelText: 'Full Name *',
+//                     prefixIcon: Icon(Icons.person),
+//                   ),
+//                   validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+//                 ),
+//                 const SizedBox(height: 16),
+//
+//                 // Email
+//                 TextFormField(
+//                   controller: emailController,
+//                   decoration: const InputDecoration(
+//                     labelText: 'Email *',
+//                     prefixIcon: Icon(Icons.email),
+//                   ),
+//                   keyboardType: TextInputType.emailAddress,
+//                   validator: (v) {
+//                     if (v?.isEmpty ?? true) return 'Required';
+//                     if (!v!.contains('@')) return 'Invalid email';
+//                     return null;
+//                   },
+//                 ),
+//                 const SizedBox(height: 16),
+//
+//                 // Password
+//                 TextFormField(
+//                   controller: passwordController,
+//                   decoration: const InputDecoration(
+//                     labelText: 'Password *',
+//                     prefixIcon: Icon(Icons.lock),
+//                   ),
+//                   obscureText: true,
+//                   validator: (v) {
+//                     if (v?.isEmpty ?? true) return 'Required';
+//                     if (v!.length < 6) return 'Minimum 6 characters';
+//                     return null;
+//                   },
+//                 ),
+//                 const SizedBox(height: 16),
+//
+//                 // Phone (Optional)
+//                 TextFormField(
+//                   controller: phoneController,
+//                   decoration: const InputDecoration(
+//                     labelText: 'Phone (Optional)',
+//                     prefixIcon: Icon(Icons.phone),
+//                   ),
+//                   keyboardType: TextInputType.phone,
+//                 ),
+//                 const SizedBox(height: 16),
+//
+//                 // Company Name (Optional)
+//                 TextFormField(
+//                   controller: companyController,
+//                   decoration: const InputDecoration(
+//                     labelText: 'Company Name (Optional)',
+//                     prefixIcon: Icon(Icons.business),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 16),
+//
+//                 // Role
+//                 Obx(
+//                       () => DropdownButtonFormField<String>(
+//                     value: selectedRole.value,
+//                     decoration: const InputDecoration(
+//                       labelText: 'Role *',
+//                       prefixIcon: Icon(Icons.shield),
+//                     ),
+//                     items: ['user']
+//                         .map(
+//                           (role) => DropdownMenuItem(
+//                         value: role,
+//                         child: Text(role.toUpperCase()),
+//                       ),
+//                     )
+//                         .toList(),
+//                     onChanged: (value) {
+//                       if (value != null) selectedRole.value = value;
+//                     },
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//         actions: [
+//           TextButton(
+//             onPressed: () => Get.back(),
+//             child: const Text('Cancel'),
+//           ),
+//           ElevatedButton(
+//             onPressed: () {
+//               if (formKey.currentState!.validate()) {
+//                 controller.createUser(
+//                   email: emailController.text.trim(),
+//                   fullName: nameController.text.trim(),
+//                   role: selectedRole.value,
+//                   password: passwordController.text.trim(),          // 👈 HERE
+//                   phone: phoneController.text.trim().isNotEmpty
+//                       ? phoneController.text.trim()
+//                       : null,
+//                   companyName: companyController.text.trim().isNotEmpty
+//                       ? companyController.text.trim()
+//                       : null,
+//                 );
+//               }
+//             },
+//             style: ElevatedButton.styleFrom(
+//               backgroundColor: AppColors.primary,
+//               foregroundColor: Colors.white,
+//             ),
+//             child: const Text('Add User'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   void _showDeleteConfirmation(UserManagementController controller, UserModel user) {
+//     Get.dialog(
+//       AlertDialog(
+//         title: const Text('Delete User'),
+//         content: Text('Are you sure you want to delete ${user.fullName}?'),
+//         actions: [
+//           TextButton(
+//             onPressed: () => Get.back(),
+//             child: const Text('Cancel'),
+//           ),
+//           ElevatedButton(
+//             onPressed: () {
+//               controller.deleteUser(user.id);
+//               Get.back();
+//             },
+//             style: ElevatedButton.styleFrom(
+//               backgroundColor: AppColors.error,
+//               foregroundColor: Colors.white,
+//             ),
+//             child: const Text('Delete'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 class UserManagementScreen extends StatelessWidget {
   const UserManagementScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<UserManagementController>();
+    final controller = Get.put(UserManagementController());
+    final authController = Get.find<AuthController>();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Management'),
         backgroundColor: AppColors.primary,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => controller.loadUsers(),
+          ),
+        ],
       ),
       body: Obx(() {
+        final regularUsers = controller.users
+            .where((u) => u.role == 'user')
+            .toList();
+
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
+        }
+
+        if (regularUsers.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.people_outline,
+                  size: 64,
+                  color: Colors.grey[400],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'No Users Found',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          );
         }
 
         return RefreshIndicator(
           onRefresh: controller.loadUsers,
           child: ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: controller.users.length,
+            itemCount: regularUsers.length,
             itemBuilder: (context, index) {
-              final user = controller.users[index];
-              return _buildUserCard(user, controller);
+              final user = regularUsers[index];
+              final isCompany = user.userType == 'company';
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12.withOpacity(0.05),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: (isCompany ? Colors.orange : AppColors.primary)
+                            .withOpacity(0.1),
+                      ),
+                      alignment: Alignment.center,
+                      child: Icon(
+                        isCompany ? Icons.business : Icons.person,
+                        color: isCompany ? Colors.orange : AppColors.primary,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            user.fullName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            user.email,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                          if (user.phone != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              user.phone!,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                          if (user.companyName != null) ...[
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.business,
+                                  size: 12,
+                                  color: Colors.grey[600],
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  user.companyName!,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: (isCompany ? Colors.orange : AppColors.primary)
+                                .withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            isCompany ? 'COMPANY' : 'USER',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: isCompany ? Colors.orange : AppColors.primary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        if (authController.currentUser.value?.role == 'admin')
+                          GestureDetector(
+                            onTap: () => controller.deleteUser(user.id),
+                            child: Icon(
+                              Icons.delete_outline,
+                              color: AppColors.error,
+                              size: 22,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
             },
           ),
         );
       }),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddUserDialog(context, controller),
-        backgroundColor: AppColors.primary,
-        icon: const Icon(Icons.add),
-        label: const Text('Add User'),
-      ),
+      floatingActionButton: Obx(() {
+        final currentUser = authController.currentUser.value;
+        if (currentUser?.role == 'admin' && controller.canCreateUser()) {
+          return FloatingActionButton.extended(
+            onPressed: () => _showCreateUserDialog(context, controller),
+            backgroundColor: AppColors.primary,
+            icon: const Icon(Icons.person_add),
+            label: Text(
+              'Add User/Company (${controller.userCreationCount.value}/2)',
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      }),
     );
   }
 
-  Widget _buildUserCard(UserModel user, UserManagementController controller) {
-    Color roleColor;
-    switch (user.role) {
-      case 'super_admin':
-        roleColor = AppColors.superAdmin;
-        break;
-      case 'admin':
-        roleColor = AppColors.admin;
-        break;
-      case 'user':
-        roleColor = AppColors.user;
-        break;
-      default:
-        roleColor = AppColors.viewer;
-    }
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: roleColor.withOpacity(0.1),
-                  child: Text(
-                    user.fullName[0].toUpperCase(),
-                    style: TextStyle(
-                      color: roleColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        user.fullName,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        user.email,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: roleColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    user.role.toUpperCase().replaceAll('_', ' '),
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: roleColor,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const Divider(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildInfoChip(
-                    user.isActive ? 'Active' : 'Blocked',
-                    user.isActive ? Icons.check_circle : Icons.block,
-                    user.isActive ? AppColors.success : AppColors.error,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                if (user.phone != null)
-                  Expanded(
-                    child: _buildInfoChip(
-                      user.phone!,
-                      Icons.phone,
-                      AppColors.info,
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton.icon(
-                  onPressed: () {
-                    controller.updateUserStatus(
-                      user.id,
-                      user.isActive ? 'blocked' : 'active',
-                    );
-                  },
-                  icon: Icon(
-                    user.isActive ? Icons.block : Icons.check_circle,
-                    size: 18,
-                  ),
-                  label: Text(user.isActive ? 'Block' : 'Activate'),
-                  style: TextButton.styleFrom(
-                    foregroundColor:
-                    user.isActive ? AppColors.error : AppColors.success,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  onPressed: () => _showDeleteConfirmation(controller, user),
-                  icon: const Icon(Icons.delete_outline),
-                  color: AppColors.error,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoChip(String label, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // void _showAddUserDialog(BuildContext context, UserManagementController controller) {
-  //   final formKey = GlobalKey<FormState>();
-  //   final emailController = TextEditingController();
-  //   final nameController = TextEditingController();
-  //   final phoneController = TextEditingController();
-  //   final selectedRole = 'user'.obs;
-  //
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //       title: const Text('Add New User'),
-  //       content: Form(
-  //         key: formKey,
-  //         child: SingleChildScrollView(
-  //           child: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             children: [
-  //               TextFormField(
-  //                 controller: nameController,
-  //                 decoration: const InputDecoration(
-  //                   labelText: 'Full Name *',
-  //                   prefixIcon: Icon(Icons.person),
-  //                 ),
-  //                 validator: (v) =>
-  //                 v?.isEmpty ?? true ? 'Required' : null,
-  //               ),
-  //               const SizedBox(height: 16),
-  //               TextFormField(
-  //                 controller: emailController,
-  //                 decoration: const InputDecoration(
-  //                   labelText: 'Email *',
-  //                   prefixIcon: Icon(Icons.email),
-  //                 ),
-  //                 keyboardType: TextInputType.emailAddress,
-  //                 validator: (v) {
-  //                   if (v?.isEmpty ?? true) return 'Required';
-  //                   if (!v!.contains('@')) return 'Invalid email';
-  //                   return null;
-  //                 },
-  //               ),
-  //               const SizedBox(height: 16),
-  //               TextFormField(
-  //                 controller: phoneController,
-  //                 decoration: const InputDecoration(
-  //                   labelText: 'Phone',
-  //                   prefixIcon: Icon(Icons.phone),
-  //                 ),
-  //                 keyboardType: TextInputType.phone,
-  //               ),
-  //               const SizedBox(height: 16),
-  //               Obx(() => DropdownButtonFormField<String>(
-  //                 value: selectedRole.value,
-  //                 decoration: const InputDecoration(
-  //                   labelText: 'Role *',
-  //                   prefixIcon: Icon(Icons.shield),
-  //                 ),
-  //                 items: ['user', 'admin']
-  //                     .map((role) => DropdownMenuItem(
-  //                   value: role,
-  //                   child: Text(role.toUpperCase()),
-  //                 ))
-  //                     .toList(),
-  //                 onChanged: (value) {
-  //                   if (value != null) selectedRole.value = value;
-  //                 },
-  //               )),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Get.back(),
-  //           child: const Text('Cancel'),
-  //         ),
-  //         ElevatedButton(
-  //           onPressed: () {
-  //             if (formKey.currentState!.validate()) {
-  //               controller.createUser(
-  //                 email: emailController.text.trim(),
-  //                 fullName: nameController.text.trim(),
-  //                 role: selectedRole.value,
-  //                 phone: phoneController.text.trim().isNotEmpty
-  //                     ? phoneController.text.trim()
-  //                     : null,
-  //               );
-  //             }
-  //           },
-  //           style: ElevatedButton.styleFrom(
-  //             backgroundColor: AppColors.primary,
-  //             foregroundColor: Colors.white,
-  //           ),
-  //           child: const Text('Add User'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-  void _showAddUserDialog(
-      BuildContext context,
-      UserManagementController controller,
-      ) {
+  void _showCreateUserDialog(
+      BuildContext context, UserManagementController controller) {
     final formKey = GlobalKey<FormState>();
     final emailController = TextEditingController();
-    final nameController = TextEditingController();
+    final passwordController = TextEditingController();
+    final fullNameController = TextEditingController();
     final phoneController = TextEditingController();
-    final companyController = TextEditingController();
-    final passwordController = TextEditingController();   // 👈 NEW
-    final selectedRole = 'user'.obs;
+    final companyNameController = TextEditingController();
+
+    final RxString selectedUserType = 'user'.obs;
+     Rxn<String> selectedCompany = Rxn<String>();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add New User'),
+        title: const Text('Add User or Company'),
         content: Form(
           key: formKey,
           child: SingleChildScrollView(
-            child: Column(
+            child: Obx(() => Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Full Name
-                TextFormField(
-                  controller: nameController,
+                // User Type Dropdown
+                DropdownButtonFormField<String>(
+                  value: selectedUserType.value,
                   decoration: const InputDecoration(
-                    labelText: 'Full Name *',
-                    prefixIcon: Icon(Icons.person),
+                    labelText: 'Type *',
+                    prefixIcon: Icon(Icons.category),
+                  ),
+                  items: [
+                    const DropdownMenuItem(
+                      value: 'user',
+                      child: Text('User'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'company',
+                      enabled: controller.canCreateCompany(),
+                      child: Row(
+                        children: [
+                          const Text('Company'),
+                          if (!controller.canCreateCompany())
+                            const Text(
+                              ' (Limit Reached)',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.red,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      selectedUserType.value = value;
+                      selectedCompany.value = null;
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                TextFormField(
+                  controller: fullNameController,
+                  decoration: InputDecoration(
+                    labelText: selectedUserType.value == 'company'
+                        ? 'Contact Person Name *'
+                        : 'Full Name *',
+                    prefixIcon: const Icon(Icons.person),
                   ),
                   validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
-                // Email
                 TextFormField(
                   controller: emailController,
                   decoration: const InputDecoration(
@@ -351,13 +760,70 @@ class UserManagementScreen extends StatelessWidget {
                   keyboardType: TextInputType.emailAddress,
                   validator: (v) {
                     if (v?.isEmpty ?? true) return 'Required';
-                    if (!v!.contains('@')) return 'Invalid email';
+                    if (!GetUtils.isEmail(v!)) return 'Invalid email';
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
-                // Password
+                TextFormField(
+                  controller: phoneController,
+                  decoration: const InputDecoration(
+                    labelText: 'Phone *',
+                    prefixIcon: Icon(Icons.phone),
+                  ),
+                  keyboardType: TextInputType.phone,
+                  maxLength: 10,
+                  validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+                ),
+                const SizedBox(height: 12),
+
+                // Company Name Field (only for new company)
+                if (selectedUserType.value == 'company')
+                  TextFormField(
+                    controller: companyNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Company Name *',
+                      prefixIcon: Icon(Icons.business),
+                    ),
+                    validator: (v) {
+                      if (selectedUserType.value == 'company') {
+                        return v?.isEmpty ?? true ? 'Required' : null;
+                      }
+                      return null;
+                    },
+                  ),
+
+                // Company Dropdown (only for user type and if companies exist)
+                if (selectedUserType.value == 'user' &&
+                    controller.existingCompanies.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    value: selectedCompany.value,
+                    decoration: const InputDecoration(
+                      labelText: 'Select Company (Optional)',
+                      prefixIcon: Icon(Icons.business),
+                    ),
+                    items: [
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('No Company'),
+                      ),
+                      ...controller.existingCompanies.map((company) {
+                        return DropdownMenuItem(
+                          value: company,
+                          child: Text(company),
+                        );
+                      }).toList(),
+                    ],
+                    onChanged: (value) {
+                      selectedCompany.value = value;
+                    },
+                  ),
+                ],
+
+                const SizedBox(height: 12),
+
                 TextFormField(
                   controller: passwordController,
                   decoration: const InputDecoration(
@@ -371,52 +837,8 @@ class UserManagementScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
-
-                // Phone (Optional)
-                TextFormField(
-                  controller: phoneController,
-                  decoration: const InputDecoration(
-                    labelText: 'Phone (Optional)',
-                    prefixIcon: Icon(Icons.phone),
-                  ),
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: 16),
-
-                // Company Name (Optional)
-                TextFormField(
-                  controller: companyController,
-                  decoration: const InputDecoration(
-                    labelText: 'Company Name (Optional)',
-                    prefixIcon: Icon(Icons.business),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Role
-                Obx(
-                      () => DropdownButtonFormField<String>(
-                    value: selectedRole.value,
-                    decoration: const InputDecoration(
-                      labelText: 'Role *',
-                      prefixIcon: Icon(Icons.shield),
-                    ),
-                    items: ['user']
-                        .map(
-                          (role) => DropdownMenuItem(
-                        value: role,
-                        child: Text(role.toUpperCase()),
-                      ),
-                    )
-                        .toList(),
-                    onChanged: (value) {
-                      if (value != null) selectedRole.value = value;
-                    },
-                  ),
-                ),
               ],
-            ),
+            )),
           ),
         ),
         actions: [
@@ -429,14 +851,15 @@ class UserManagementScreen extends StatelessWidget {
               if (formKey.currentState!.validate()) {
                 controller.createUser(
                   email: emailController.text.trim(),
-                  fullName: nameController.text.trim(),
-                  role: selectedRole.value,
-                  password: passwordController.text.trim(),          // 👈 HERE
-                  phone: phoneController.text.trim().isNotEmpty
-                      ? phoneController.text.trim()
+                  password: passwordController.text,
+                  fullName: fullNameController.text.trim(),
+                  userType: selectedUserType.value,
+                  phone: phoneController.text.trim(),
+                  companyName: selectedUserType.value == 'company'
+                      ? companyNameController.text.trim()
                       : null,
-                  companyName: companyController.text.trim().isNotEmpty
-                      ? companyController.text.trim()
+                  selectedCompany: selectedUserType.value == 'user'
+                      ? selectedCompany.value
                       : null,
                 );
               }
@@ -445,33 +868,9 @@ class UserManagementScreen extends StatelessWidget {
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Add User'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showDeleteConfirmation(UserManagementController controller, UserModel user) {
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Delete User'),
-        content: Text('Are you sure you want to delete ${user.fullName}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              controller.deleteUser(user.id);
-              Get.back();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Delete'),
+            child: Obx(() => Text(
+              selectedUserType.value == 'company' ? 'Create Company' : 'Create User',
+            )),
           ),
         ],
       ),
@@ -822,6 +1221,366 @@ class AdminManagementScreen extends StatelessWidget {
 // TOKEN MANAGEMENT SCREEN
 
 
+// class TokenManagementScreen extends StatelessWidget {
+//   const TokenManagementScreen({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final controller = Get.put(TokenController());
+//     final authController = Get.find<AuthController>();
+//     final currentRole = authController.currentUser.value?.role;
+//
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Token Management'),
+//         backgroundColor: AppColors.info,
+//         actions: [
+//           IconButton(
+//             icon: const Icon(Icons.refresh),
+//             onPressed: () => controller.loadTokens(),
+//           ),
+//         ],
+//       ),
+//       body: Obx(() {
+//         if (controller.isLoading.value) {
+//           return const Center(child: CircularProgressIndicator());
+//         }
+//
+//         if (controller.tokens.isEmpty) {
+//           return Center(
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Icon(
+//                   Icons.token_outlined,
+//                   size: 64,
+//                   color: Colors.grey[400],
+//                 ),
+//                 const SizedBox(height: 16),
+//                 Text(
+//                   'No Tokens Found',
+//                   style: TextStyle(
+//                     fontSize: 18,
+//                     color: Colors.grey[600],
+//                     fontWeight: FontWeight.w600,
+//                   ),
+//                 ),
+//                 if (currentRole == 'user') ...[
+//                   const SizedBox(height: 8),
+//                   const Text(
+//                     'Create your first token!',
+//                     style: TextStyle(color: AppColors.textSecondary),
+//                   ),
+//                 ],
+//               ],
+//             ),
+//           );
+//         }
+//
+//         return RefreshIndicator(
+//           onRefresh: controller.loadTokens,
+//           child: ListView.builder(
+//             padding: const EdgeInsets.all(16),
+//             itemCount: controller.tokens.length,
+//             itemBuilder: (context, index) {
+//               final token = controller.tokens[index];
+//               return _buildTokenCard(token, controller, currentRole);
+//             },
+//           ),
+//         );
+//       }),
+//       floatingActionButton: FloatingActionButton.extended(
+//         onPressed: () => _showAddTokenDialog(context, controller),
+//         backgroundColor: AppColors.info,
+//         icon: const Icon(Icons.add),
+//         label: const Text('Create Token'),
+//       ).animate().scale(delay: 300.ms)
+//     );
+//   }
+//
+//   Widget _buildTokenCard(
+//       TokenModel token, TokenController controller, String? currentRole) {
+//     final isValid = token.isValid;
+//     final canDelete = currentRole == 'super_admin';
+//
+//     return Card(
+//       margin: const EdgeInsets.only(bottom: 12),
+//       elevation: 2,
+//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+//       child: Padding(
+//         padding: const EdgeInsets.all(16),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Row(
+//               children: [
+//                 Container(
+//                   padding: const EdgeInsets.all(10),
+//                   decoration: BoxDecoration(
+//                     color: (isValid ? AppColors.success : AppColors.error)
+//                         .withOpacity(0.1),
+//                     borderRadius: BorderRadius.circular(10),
+//                   ),
+//                   child: Icon(
+//                     Icons.token,
+//                     color: isValid ? AppColors.success : AppColors.error,
+//                     size: 24,
+//                   ),
+//                 ),
+//                 const SizedBox(width: 12),
+//                 Expanded(
+//                   child: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Text(
+//                         token.tokenNumber,
+//                         style: const TextStyle(
+//                           fontWeight: FontWeight.bold,
+//                           fontSize: 16,
+//                         ),
+//                       ),
+//                       const SizedBox(height: 4),
+//                       Text(
+//                         token.vehicleNumber ?? 'No vehicle assigned',
+//                         style: const TextStyle(
+//                           fontSize: 12,
+//                           color: AppColors.textSecondary,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//                 Container(
+//                   padding: const EdgeInsets.symmetric(
+//                     horizontal: 12,
+//                     vertical: 6,
+//                   ),
+//                   decoration: BoxDecoration(
+//                     color: (isValid ? AppColors.success : AppColors.error)
+//                         .withOpacity(0.1),
+//                     borderRadius: BorderRadius.circular(20),
+//                   ),
+//                   child: Text(
+//                     token.status.toUpperCase(),
+//                     style: TextStyle(
+//                       fontSize: 10,
+//                       fontWeight: FontWeight.bold,
+//                       color: isValid ? AppColors.success : AppColors.error,
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             const Divider(height: 24),
+//             if (token.materialType != null || token.weightInKg != null) ...[
+//               Row(
+//                 children: [
+//                   if (token.materialType != null)
+//                     Expanded(
+//                       child: _buildInfoColumn('Material', token.materialType!),
+//                     ),
+//                   if (token.weightInKg != null)
+//                     Expanded(
+//                       child: _buildInfoColumn(
+//                           'Weight', '${token.weightInKg} Kg'),
+//                     ),
+//                 ],
+//               ),
+//               const SizedBox(height: 12),
+//             ],
+//             Row(
+//               children: [
+//                 Expanded(
+//                   child: _buildInfoColumn(
+//                     'Valid From',
+//                     '${token.validFrom.day.toString().padLeft(2, '0')}/${token.validFrom.month.toString().padLeft(2, '0')}/${token.validFrom.year}',
+//                   ),
+//                 ),
+//                 Expanded(
+//                   child: _buildInfoColumn(
+//                     'Valid Until',
+//                     '${token.validUntil.day.toString().padLeft(2, '0')}/${token.validUntil.month.toString().padLeft(2, '0')}/${token.validUntil.year}',
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             const SizedBox(height: 16),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.end,
+//               children: [
+//                 if (canDelete)
+//                   TextButton.icon(
+//                     onPressed: () => controller.deleteToken(token.id),
+//                     icon: const Icon(Icons.delete, size: 18),
+//                     label: const Text('Delete'),
+//                     style: TextButton.styleFrom(
+//                       foregroundColor: AppColors.error,
+//                     ),
+//                   ),
+//                 const SizedBox(width: 8),
+//                 ElevatedButton.icon(
+//                   onPressed: () =>generateTokenPDF(token),
+//                   icon: const Icon(Icons.print, size: 18),
+//                   label: const Text('Print Token'),
+//                   style: ElevatedButton.styleFrom(
+//                     backgroundColor: AppColors.primary,
+//                     foregroundColor: Colors.white,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+//   Widget _buildInfoColumn(String label, String value) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Text(
+//           label,
+//           style: const TextStyle(
+//             fontSize: 12,
+//             color: AppColors.textSecondary,
+//           ),
+//         ),
+//         const SizedBox(height: 2),
+//         Text(
+//           value,
+//           style: const TextStyle(
+//             fontSize: 14,
+//             fontWeight: FontWeight.w600,
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+//
+//   void _showAddTokenDialog(BuildContext context, TokenController controller) {
+//     final formKey = GlobalKey<FormState>();
+//     final tokenNumberController = TextEditingController();
+//     final vehicleNumberController = TextEditingController();
+//     final weightController = TextEditingController();
+//     final materialController = TextEditingController();
+//     final validFrom = DateTime.now().obs;
+//     final validUntil = DateTime.now().add(const Duration(days: 30)).obs;
+//
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: const Text('Create New Token'),
+//         content: Form(
+//           key: formKey,
+//           child: SingleChildScrollView(
+//             child: Column(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 TextFormField(
+//                   controller: tokenNumberController,
+//                   decoration: const InputDecoration(
+//                     labelText: 'Token Number *',
+//                     prefixIcon: Icon(Icons.token),
+//                     hintText: 'e.g., TKN001',
+//                   ),
+//                   textCapitalization: TextCapitalization.characters,
+//                   validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+//                 ),
+//                 const SizedBox(height: 12),
+//                 TextFormField(
+//                   controller: vehicleNumberController,
+//                   decoration: const InputDecoration(
+//                     labelText: 'Vehicle Number',
+//                     prefixIcon: Icon(Icons.local_shipping),
+//                     hintText: 'e.g., GJ01AB1234',
+//                   ),
+//                   textCapitalization: TextCapitalization.characters,
+//                 ),
+//                 const SizedBox(height: 12),
+//                 TextFormField(
+//                   controller: materialController,
+//                   decoration: const InputDecoration(
+//                     labelText: 'Material Type',
+//                     prefixIcon: Icon(Icons.inventory_2),
+//                     hintText: 'e.g., Sand, Gravel',
+//                   ),
+//                 ),
+//                 const SizedBox(height: 12),
+//                 TextFormField(
+//                   controller: weightController,
+//                   decoration: const InputDecoration(
+//                     labelText: 'Weight (Kg)',
+//                     prefixIcon: Icon(Icons.scale),
+//                   ),
+//                   keyboardType: TextInputType.number,
+//                 ),
+//                 const SizedBox(height: 16),
+//                 Container(
+//                   padding: const EdgeInsets.all(12),
+//                   decoration: BoxDecoration(
+//                     color: AppColors.info.withOpacity(0.1),
+//                     borderRadius: BorderRadius.circular(8),
+//                   ),
+//                   child: Column(
+//                     children: [
+//                       const Text(
+//                         'Validity Period',
+//                         style: TextStyle(
+//                           fontWeight: FontWeight.bold,
+//                           fontSize: 14,
+//                         ),
+//                       ),
+//                       const SizedBox(height: 8),
+//                       Obx(() => Text(
+//                         'Valid for 30 days from ${validFrom.value.day}/${validFrom.value.month}/${validFrom.value.year}',
+//                         style: const TextStyle(fontSize: 12),
+//                         textAlign: TextAlign.center,
+//                       )),
+//                     ],
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//         actions: [
+//           TextButton(
+//             onPressed: () => Get.back(),
+//             child: const Text('Cancel'),
+//           ),
+//           ElevatedButton(
+//             onPressed: () {
+//               if (formKey.currentState!.validate()) {
+//                 controller.createToken(
+//                   // tokenNumber: tokenNumberController.text.trim().toUpperCase(),
+//                   validFrom: validFrom.value,
+//                   validUntil: validUntil.value,
+//                   vehicleNumber: vehicleNumberController.text.trim().isNotEmpty
+//                       ? vehicleNumberController.text.trim().toUpperCase()
+//                       : null,
+//                   weightInKg: weightController.text.trim().isNotEmpty
+//                       ? double.tryParse(weightController.text.trim())
+//                       : null,
+//                   materialType: materialController.text.trim().isNotEmpty
+//                       ? materialController.text.trim()
+//                       : null,
+//                 );
+//               }
+//             },
+//             style: ElevatedButton.styleFrom(
+//               backgroundColor: AppColors.info,
+//               foregroundColor: Colors.white,
+//             ),
+//             child: const Text('Create & Print'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+
 class TokenManagementScreen extends StatelessWidget {
   const TokenManagementScreen({super.key});
 
@@ -835,6 +1594,7 @@ class TokenManagementScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Token Management'),
         backgroundColor: AppColors.info,
+        automaticallyImplyLeading: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -885,7 +1645,7 @@ class TokenManagementScreen extends StatelessWidget {
             itemCount: controller.tokens.length,
             itemBuilder: (context, index) {
               final token = controller.tokens[index];
-              return _buildTokenCard(token, controller, currentRole);
+              return _buildTokenCard(context,token, controller, currentRole);
             },
           ),
         );
@@ -895,14 +1655,16 @@ class TokenManagementScreen extends StatelessWidget {
         backgroundColor: AppColors.info,
         icon: const Icon(Icons.add),
         label: const Text('Create Token'),
-      ).animate().scale(delay: 300.ms)
+      ).animate().scale(delay: 300.ms),
     );
   }
 
-  Widget _buildTokenCard(
+  Widget _buildTokenCard(BuildContext context,
       TokenModel token, TokenController controller, String? currentRole) {
     final isValid = token.isValid;
     final canDelete = currentRole == 'super_admin';
+    final serialStr = token.serialNumber.toString().padLeft(8, '0');
+    final printSeqStr = token.printSequence.toString().padLeft(8, '0');
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -941,12 +1703,46 @@ class TokenManagementScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        token.vehicleNumber ?? 'No vehicle assigned',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'SN: $serialStr',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.info.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'Seq: $printSeqStr',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: AppColors.info,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -973,22 +1769,41 @@ class TokenManagementScreen extends StatelessWidget {
               ],
             ),
             const Divider(height: 24),
-            if (token.materialType != null || token.weightInKg != null) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: _buildInfoColumn(
+                    'Vehicle',
+                    token.vehicleNumber ?? 'Not Assigned',
+                  ),
+                ),
+                Expanded(
+                  child: _buildInfoColumn(
+                    'Material',
+                    token.materialType ?? 'N/A',
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (token.weightInKg != null)
               Row(
                 children: [
-                  if (token.materialType != null)
-                    Expanded(
-                      child: _buildInfoColumn('Material', token.materialType!),
+                  Expanded(
+                    child: _buildInfoColumn(
+                      'Weight',
+                      '${token.weightInKg} Kg',
                     ),
-                  if (token.weightInKg != null)
-                    Expanded(
-                      child: _buildInfoColumn(
-                          'Weight', '${token.weightInKg} Kg'),
+                  ),
+                  Expanded(
+                    child: _buildInfoColumn(
+                      'Print Count',
+                      token.printCount.toString(),
                     ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 12),
-            ],
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -1011,7 +1826,11 @@ class TokenManagementScreen extends StatelessWidget {
               children: [
                 if (canDelete)
                   TextButton.icon(
-                    onPressed: () => controller.deleteToken(token.id),
+                    onPressed: () => _showDeleteConfirmation(
+                      context,
+                      token,
+                      controller,
+                    ),
                     icon: const Icon(Icons.delete, size: 18),
                     label: const Text('Delete'),
                     style: TextButton.styleFrom(
@@ -1020,7 +1839,7 @@ class TokenManagementScreen extends StatelessWidget {
                   ),
                 const SizedBox(width: 8),
                 ElevatedButton.icon(
-                  onPressed: () =>generateTokenPDF(token),
+                  onPressed: () => generateTokenPDF(token),
                   icon: const Icon(Icons.print, size: 18),
                   label: const Text('Print Token'),
                   style: ElevatedButton.styleFrom(
@@ -1061,7 +1880,6 @@ class TokenManagementScreen extends StatelessWidget {
 
   void _showAddTokenDialog(BuildContext context, TokenController controller) {
     final formKey = GlobalKey<FormState>();
-    final tokenNumberController = TextEditingController();
     final vehicleNumberController = TextEditingController();
     final weightController = TextEditingController();
     final materialController = TextEditingController();
@@ -1078,17 +1896,28 @@ class TokenManagementScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextFormField(
-                  controller: tokenNumberController,
-                  decoration: const InputDecoration(
-                    labelText: 'Token Number *',
-                    prefixIcon: Icon(Icons.token),
-                    hintText: 'e.g., TKN001',
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.info.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  textCapitalization: TextCapitalization.characters,
-                  validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+                  child: const Column(
+                    children: [
+                      Icon(Icons.info, color: AppColors.info),
+                      SizedBox(height: 8),
+                      Text(
+                        'Token Number & Serial Number will be auto-generated',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.info,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: vehicleNumberController,
                   decoration: const InputDecoration(
@@ -1120,7 +1949,7 @@ class TokenManagementScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.info.withOpacity(0.1),
+                    color: AppColors.success.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Column(
@@ -1154,7 +1983,6 @@ class TokenManagementScreen extends StatelessWidget {
             onPressed: () {
               if (formKey.currentState!.validate()) {
                 controller.createToken(
-                  tokenNumber: tokenNumberController.text.trim().toUpperCase(),
                   validFrom: validFrom.value,
                   validUntil: validUntil.value,
                   vehicleNumber: vehicleNumberController.text.trim().isNotEmpty
@@ -1179,8 +2007,65 @@ class TokenManagementScreen extends StatelessWidget {
       ),
     );
   }
-}
 
+  void _showDeleteConfirmation(
+      BuildContext context,
+      TokenModel token,
+      TokenController controller,
+      ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Token'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Are you sure you want to delete this token?'),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.error.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Token: ${token.tokenNumber}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Serial: ${token.serialNumber.toString().padLeft(8, '0')}',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              controller.deleteToken(token.id);
+              Get.back();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+}
 class EnhancedUserManagementScreen extends StatelessWidget {
   const EnhancedUserManagementScreen({super.key});
 
@@ -1227,6 +2112,9 @@ class EnhancedUserManagementScreen extends StatelessWidget {
           // User list
           Expanded(
             child: Obx(() {
+              final regularUsers = controller.users
+                  .where((u) => u.role == 'user')
+                  .toList();
               if (controller.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
@@ -1235,40 +2123,165 @@ class EnhancedUserManagementScreen extends StatelessWidget {
                 return _buildEmptyState(currentUser);
               }
 
+              // return RefreshIndicator(
+              //   onRefresh: controller.loadUsers,
+              //   child: ListView.builder(
+              //     padding: const EdgeInsets.all(16),
+              //     itemCount: controller.users.length,
+              //     itemBuilder: (context, index) {
+              //       final user = controller.users[index];
+              //       return _buildEnhancedUserCard(user, controller, currentUser!);
+              //     },
+              //   ),
+              // );
               return RefreshIndicator(
                 onRefresh: controller.loadUsers,
                 child: ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  itemCount: controller.users.length,
+                  itemCount: regularUsers.length,
                   itemBuilder: (context, index) {
-                    final user = controller.users[index];
-                    return _buildEnhancedUserCard(user, controller, currentUser!);
+                    final user = regularUsers[index];
+                    final isCompany = user.userType == 'company';
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12.withOpacity(0.05),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: (isCompany ? Colors.orange : AppColors.primary)
+                                  .withOpacity(0.1),
+                            ),
+                            alignment: Alignment.center,
+                            child: Icon(
+                              isCompany ? Icons.business : Icons.person,
+                              color: isCompany ? Colors.orange : AppColors.primary,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  user.fullName,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  user.email,
+                                  style: const TextStyle(fontSize: 13),
+                                ),
+                                if (user.phone != null) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    user.phone!,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                                if (user.companyName != null) ...[
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.business,
+                                        size: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        user.companyName!,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: (isCompany ? Colors.orange : AppColors.primary)
+                                      .withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  isCompany ? 'COMPANY' : 'USER',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: isCompany ? Colors.orange : AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              if (authController.currentUser.value?.role == 'admin')
+                                GestureDetector(
+                                  onTap: () => controller.deleteUser(user.id),
+                                  child: Icon(
+                                    Icons.delete_outline,
+                                    color: AppColors.error,
+                                    size: 22,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
                   },
                 ),
               );
+
             }),
           ),
         ],
       ),
       floatingActionButton: Obx(() {
-        final canCreate = controller.canCreateUser();
-
-        return FloatingActionButton.extended(
-          onPressed: canCreate
-              ? () => _showAddUserDialog(context, controller, )
-              : null,
-          backgroundColor: canCreate
-              ? (currentUser?.role == 'super_admin' ? AppColors.superAdmin : AppColors.admin)
-              : Colors.grey,
-          icon: Icon(canCreate ? Icons.person_add : Icons.block),
-          label: Text(
-            currentUser?.role == 'admin'
-                ? (controller.userCreationCount.value >= 1
-                ? 'Limit Reached'
-                : 'Add User')
-                : 'Add Admin',
-          ),
-        );
+        final currentUser = authController.currentUser.value;
+        if (currentUser?.role == 'admin' && controller.canCreateUser()) {
+          return FloatingActionButton.extended(
+            onPressed: () => _showCreateUserDialog(context, controller),
+            backgroundColor: AppColors.primary,
+            icon: const Icon(Icons.person_add),
+            label: Text(
+              'Add User/Company (${controller.userCreationCount.value}/2)',
+            ),
+          );
+        }
+        return const SizedBox.shrink();
       }),
     );
   }
@@ -1634,40 +2647,79 @@ class EnhancedUserManagementScreen extends StatelessWidget {
       ),
     );
   }
-  void _showAddUserDialog(
-      BuildContext context,
-      UserManagementController controller,
-      ) {
+  void _showCreateUserDialog(
+      BuildContext context, UserManagementController controller) {
     final formKey = GlobalKey<FormState>();
     final emailController = TextEditingController();
-    final nameController = TextEditingController();
+    final passwordController = TextEditingController();
+    final fullNameController = TextEditingController();
     final phoneController = TextEditingController();
-    final companyController = TextEditingController();
-    final passwordController = TextEditingController();   // 👈 NEW
-    final selectedRole = 'user'.obs;
+    final companyNameController = TextEditingController();
+
+    final RxString selectedUserType = 'user'.obs;
+    final Rxn<String> selectedCompany = Rxn<String>();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add New User'),
+        title: const Text('Add User or Company'),
         content: Form(
           key: formKey,
           child: SingleChildScrollView(
-            child: Column(
+            child: Obx(() => Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Full Name
-                TextFormField(
-                  controller: nameController,
+                // User Type Dropdown
+                DropdownButtonFormField<String>(
+                  value: selectedUserType.value,
                   decoration: const InputDecoration(
-                    labelText: 'Full Name *',
-                    prefixIcon: Icon(Icons.person),
+                    labelText: 'Type *',
+                    prefixIcon: Icon(Icons.category),
+                  ),
+                  items: [
+                    const DropdownMenuItem(
+                      value: 'user',
+                      child: Text('User'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'company',
+                      enabled: controller.canCreateCompany(),
+                      child: Row(
+                        children: [
+                          const Text('Company'),
+                          if (!controller.canCreateCompany())
+                            const Text(
+                              ' (Limit Reached)',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.red,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      selectedUserType.value = value;
+                      selectedCompany.value = null;
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                TextFormField(
+                  controller: fullNameController,
+                  decoration: InputDecoration(
+                    labelText: selectedUserType.value == 'company'
+                        ? 'Contact Person Name *'
+                        : 'Full Name *',
+                    prefixIcon: const Icon(Icons.person),
                   ),
                   validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
-                // Email
                 TextFormField(
                   controller: emailController,
                   decoration: const InputDecoration(
@@ -1677,13 +2729,70 @@ class EnhancedUserManagementScreen extends StatelessWidget {
                   keyboardType: TextInputType.emailAddress,
                   validator: (v) {
                     if (v?.isEmpty ?? true) return 'Required';
-                    if (!v!.contains('@')) return 'Invalid email';
+                    if (!GetUtils.isEmail(v!)) return 'Invalid email';
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
-                // Password
+                TextFormField(
+                  controller: phoneController,
+                  decoration: const InputDecoration(
+                    labelText: 'Phone *',
+                    prefixIcon: Icon(Icons.phone),
+                  ),
+                  keyboardType: TextInputType.phone,
+                  maxLength: 10,
+                  validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+                ),
+                const SizedBox(height: 12),
+
+                // Company Name Field (only for new company)
+                if (selectedUserType.value == 'company')
+                  TextFormField(
+                    controller: companyNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Company Name *',
+                      prefixIcon: Icon(Icons.business),
+                    ),
+                    validator: (v) {
+                      if (selectedUserType.value == 'company') {
+                        return v?.isEmpty ?? true ? 'Required' : null;
+                      }
+                      return null;
+                    },
+                  ),
+
+                // Company Dropdown (only for user type and if companies exist)
+                if (selectedUserType.value == 'user' &&
+                    controller.existingCompanies.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    value: selectedCompany.value,
+                    decoration: const InputDecoration(
+                      labelText: 'Select Company (Optional)',
+                      prefixIcon: Icon(Icons.business),
+                    ),
+                    items: [
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('No Company'),
+                      ),
+                      ...controller.existingCompanies.map((company) {
+                        return DropdownMenuItem(
+                          value: company,
+                          child: Text(company),
+                        );
+                      }).toList(),
+                    ],
+                    onChanged: (value) {
+                      selectedCompany.value = value;
+                    },
+                  ),
+                ],
+
+                const SizedBox(height: 12),
+
                 TextFormField(
                   controller: passwordController,
                   decoration: const InputDecoration(
@@ -1697,31 +2806,8 @@ class EnhancedUserManagementScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
-
-                // Phone (Optional)
-                TextFormField(
-                  controller: phoneController,
-                  decoration: const InputDecoration(
-                    labelText: 'Phone (Optional)',
-                    prefixIcon: Icon(Icons.phone),
-                  ),
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: 16),
-
-                // Company Name (Optional)
-                TextFormField(
-                  controller: companyController,
-                  decoration: const InputDecoration(
-                    labelText: 'Company Name (Optional)',
-                    prefixIcon: Icon(Icons.business),
-                  ),
-                ),
-
-                // Role
               ],
-            ),
+            )),
           ),
         ),
         actions: [
@@ -1734,14 +2820,15 @@ class EnhancedUserManagementScreen extends StatelessWidget {
               if (formKey.currentState!.validate()) {
                 controller.createUser(
                   email: emailController.text.trim(),
-                  fullName: nameController.text.trim(),
-                  role: 'user',
-                  password: passwordController.text.trim(),          // 👈 HERE
-                  phone: phoneController.text.trim().isNotEmpty
-                      ? phoneController.text.trim()
+                  password: passwordController.text,
+                  fullName: fullNameController.text.trim(),
+                  userType: selectedUserType.value,
+                  phone: phoneController.text.trim(),
+                  companyName: selectedUserType.value == 'company'
+                      ? companyNameController.text.trim()
                       : null,
-                  companyName: companyController.text.trim().isNotEmpty
-                      ? companyController.text.trim()
+                  selectedCompany: selectedUserType.value == 'user'
+                      ? selectedCompany.value
                       : null,
                 );
               }
@@ -1750,12 +2837,137 @@ class EnhancedUserManagementScreen extends StatelessWidget {
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Add User'),
+            child: Obx(() => Text(
+              selectedUserType.value == 'company' ? 'Create Company' : 'Create User',
+            )),
           ),
         ],
       ),
     );
   }
+}
+  // void _showAddUserDialog(
+  //     BuildContext context,
+  //     UserManagementController controller,
+  //     ) {
+  //   final formKey = GlobalKey<FormState>();
+  //   final emailController = TextEditingController();
+  //   final nameController = TextEditingController();
+  //   final phoneController = TextEditingController();
+  //   final companyController = TextEditingController();
+  //   final passwordController = TextEditingController();   // 👈 NEW
+  //   final selectedRole = 'user'.obs;
+  //
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('Add New User'),
+  //       content: Form(
+  //         key: formKey,
+  //         child: SingleChildScrollView(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               // Full Name
+  //               TextFormField(
+  //                 controller: nameController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Full Name *',
+  //                   prefixIcon: Icon(Icons.person),
+  //                 ),
+  //                 validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+  //               ),
+  //               const SizedBox(height: 16),
+  //
+  //               // Email
+  //               TextFormField(
+  //                 controller: emailController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Email *',
+  //                   prefixIcon: Icon(Icons.email),
+  //                 ),
+  //                 keyboardType: TextInputType.emailAddress,
+  //                 validator: (v) {
+  //                   if (v?.isEmpty ?? true) return 'Required';
+  //                   if (!v!.contains('@')) return 'Invalid email';
+  //                   return null;
+  //                 },
+  //               ),
+  //               const SizedBox(height: 16),
+  //
+  //               // Password
+  //               TextFormField(
+  //                 controller: passwordController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Password *',
+  //                   prefixIcon: Icon(Icons.lock),
+  //                 ),
+  //                 obscureText: true,
+  //                 validator: (v) {
+  //                   if (v?.isEmpty ?? true) return 'Required';
+  //                   if (v!.length < 6) return 'Minimum 6 characters';
+  //                   return null;
+  //                 },
+  //               ),
+  //               const SizedBox(height: 16),
+  //
+  //               // Phone (Optional)
+  //               TextFormField(
+  //                 controller: phoneController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Phone (Optional)',
+  //                   prefixIcon: Icon(Icons.phone),
+  //                 ),
+  //                 keyboardType: TextInputType.phone,
+  //               ),
+  //               const SizedBox(height: 16),
+  //
+  //               // Company Name (Optional)
+  //               TextFormField(
+  //                 controller: companyController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Company Name (Optional)',
+  //                   prefixIcon: Icon(Icons.business),
+  //                 ),
+  //               ),
+  //
+  //               // Role
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Get.back(),
+  //           child: const Text('Cancel'),
+  //         ),
+  //         ElevatedButton(
+  //           onPressed: () {
+  //             if (formKey.currentState!.validate()) {
+  //               controller.createUser(
+  //                 email: emailController.text.trim(),
+  //                 fullName: nameController.text.trim(),
+  //                 role: 'user',
+  //                 password: passwordController.text.trim(),          // 👈 HERE
+  //                 phone: phoneController.text.trim().isNotEmpty
+  //                     ? phoneController.text.trim()
+  //                     : null,
+  //                 companyName: companyController.text.trim().isNotEmpty
+  //                     ? companyController.text.trim()
+  //                     : null,
+  //               );
+  //             }
+  //           },
+  //           style: ElevatedButton.styleFrom(
+  //             backgroundColor: AppColors.primary,
+  //             foregroundColor: Colors.white,
+  //           ),
+  //           child: const Text('Add User'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   // void _showAddUserDialog(
   //     BuildContext context,
@@ -2023,4 +3235,3 @@ class EnhancedUserManagementScreen extends StatelessWidget {
       ),
     );
   }
-}

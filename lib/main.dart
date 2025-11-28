@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'config/supabase_config.dart';
+import 'landing_page.dart';
 
 
 void main() async {
@@ -73,6 +74,7 @@ class ChallanManagementApp extends StatelessWidget {
           ),
         ),
       ),
+      // home: HomePageScreen(),
       initialRoute: AppRoutes.splash,
       getPages: AppRoutes.routes,
     );
