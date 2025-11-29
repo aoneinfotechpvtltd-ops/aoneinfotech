@@ -127,13 +127,20 @@ Get.put(DashboardController());
       binding: BindingsBuilder(() {
         Get.lazyPut(() => ReportsController());
       }),
-    ),GetPage(
+    ),
+    GetPage(
       name: tokenReport,
-      page: () => const PrintTokenReportScreen(),
+      page: () {
+        final args = Get.arguments ?? {};
+        return PrintTokenReportScreen(
+          isAdmin: args['isAdmin'] ?? false,
+        );
+      },
       binding: BindingsBuilder(() {
-        Get.put( TokenController());
+        Get.put(TokenController());
       }),
     ),
+
     GetPage(
       name: tokenManagement,
       page: () => const TokenManagementScreen(),

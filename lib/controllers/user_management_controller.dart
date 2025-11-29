@@ -1359,18 +1359,12 @@ class TokenController extends GetxController {
   }
 
   Future<String> generateTokenNumber() async {
-    try {
-      final now = DateTime.now();
-      final dateStr = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
-      final serial = nextSerialNumber.value.toString().padLeft(6, '0');
-      return 'TKN$dateStr$serial';
-    } catch (e) {
-      print('Error generating token number: $e');
-      final now = DateTime.now();
-      final random = DateTime.now().millisecondsSinceEpoch % 1000000;
-      return 'TKN${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${random.toString().padLeft(6, '0')}';
-    }
+    final now = DateTime.now();
+    final dateStr = '${now.year % 100}${now.month.toString().padLeft(2, '0')}';
+    final serial = nextSerialNumber.value.toString().padLeft(4, '0');
+    return 'TKN$dateStr-$serial';
   }
+
 
   Future<int> generateSerialNumber() async {
     try {
@@ -1381,13 +1375,19 @@ class TokenController extends GetxController {
       return DateTime.now().millisecondsSinceEpoch % 1000000;
     }
   }
+// Updated createToken method in TokenController
 
   Future<void> createToken({
     required DateTime validFrom,
     required DateTime validUntil,
-    String? vehicleNumber,
-    double? weightInKg,
+    required String driverName,
+    required String driverMobile,
+    required String vehicleNumber,
+    String? vehicleType,
+    int? quantity,
+    String? place,
     String? materialType,
+    double? weightInKg,
   }) async {
     try {
       isLoading.value = true;
@@ -1407,17 +1407,17 @@ class TokenController extends GetxController {
       }
 
       // ADMIN RESTRICTION: Cannot create tokens
-      if (currentUser?.role == 'admin') {
-        Get.snackbar(
-          'Access Denied',
-          'Admin cannot create tokens. Only regular users can create tokens.',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 4),
-          icon: const Icon(Icons.block, color: Colors.white),
-        );
-        return;
-      }
+      // if (currentUser?.role == 'admin') {
+      //   Get.snackbar(
+      //     'Access Denied',
+      //     'Admin cannot create tokens. Only regular users can create tokens.',
+      //     backgroundColor: Colors.red,
+      //     colorText: Colors.white,
+      //     duration: const Duration(seconds: 4),
+      //     icon: const Icon(Icons.block, color: Colors.white),
+      //   );
+      //   return;
+      // }
 
       // Generate token number and serial number automatically
       final serialNumber = await generateSerialNumber();
@@ -1440,6 +1440,10 @@ class TokenController extends GetxController {
         return;
       }
 
+      // Get supervisor name (username of creator)
+      final supervisorName = currentUser?.fullName ?? currentUser?.email ?? 'Unknown';
+
+      // Insert token with all fields
       await supabase.from(SupabaseConfig.tokensTable).insert({
         'token_number': tokenNumber,
         'serial_number': serialNumber,
@@ -1447,9 +1451,21 @@ class TokenController extends GetxController {
         'status': 'active',
         'valid_from': validFrom.toIso8601String(),
         'valid_until': validUntil.toIso8601String(),
+
+        // New fields from HTML
+        'driver_name': driverName,
+        'driver_mobile': driverMobile,
         'vehicle_number': vehicleNumber,
-        'weight_in_kg': weightInKg,
+        'vehicle_type': vehicleType,
+        'quantity': quantity,
+        'place': place,
+        'supervisor_name': supervisorName.toUpperCase(),
+
+        // Optional fields
         'material_type': materialType,
+        'weight_in_kg': weightInKg,
+
+        // System fields
         'created_by': currentUser?.id,
         'created_at': DateTime.now().toIso8601String(),
         'print_count': 0,
@@ -1468,17 +1484,114 @@ class TokenController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     } catch (e) {
-      // Get.snackbar(
-      //   'Error',
-      //   'Failed to create token: ${e.toString()}',
-      //   backgroundColor: Colors.red,
-      //   colorText: Colors.white,
-      // );
+      Get.snackbar(
+        'Error',
+        'Failed to create token: ${e.toString()}',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       print('Create token error: $e');
     } finally {
       isLoading.value = false;
     }
   }
+  // Future<void> createToken({
+  //   required DateTime validFrom,
+  //   required DateTime validUntil,
+  //   String? vehicleNumber,
+  //   double? weightInKg,
+  //   String? materialType,
+  // }) async {
+  //   try {
+  //     isLoading.value = true;
+  //     final currentUser = authController.currentUser.value;
+  //
+  //     // SUPER ADMIN RESTRICTION: Cannot create tokens
+  //     if (currentUser?.role == 'super_admin') {
+  //       Get.snackbar(
+  //         'Access Denied',
+  //         'Super Admin cannot create tokens. Only regular users can create tokens.',
+  //         backgroundColor: Colors.red,
+  //         colorText: Colors.white,
+  //         duration: const Duration(seconds: 4),
+  //         icon: const Icon(Icons.block, color: Colors.white),
+  //       );
+  //       return;
+  //     }
+  //
+  //     // ADMIN RESTRICTION: Cannot create tokens
+  //     if (currentUser?.role == 'admin') {
+  //       Get.snackbar(
+  //         'Access Denied',
+  //         'Admin cannot create tokens. Only regular users can create tokens.',
+  //         backgroundColor: Colors.red,
+  //         colorText: Colors.white,
+  //         duration: const Duration(seconds: 4),
+  //         icon: const Icon(Icons.block, color: Colors.white),
+  //       );
+  //       return;
+  //     }
+  //
+  //     // Generate token number and serial number automatically
+  //     final serialNumber = await generateSerialNumber();
+  //     final tokenNumber = await generateTokenNumber();
+  //
+  //     // Verify token doesn't already exist
+  //     final existing = await supabase
+  //         .from(SupabaseConfig.tokensTable)
+  //         .select()
+  //         .eq('token_number', tokenNumber)
+  //         .maybeSingle();
+  //
+  //     if (existing != null) {
+  //       Get.snackbar(
+  //         'Error',
+  //         'Token already exists. Please try again.',
+  //         backgroundColor: Colors.orange,
+  //         colorText: Colors.white,
+  //       );
+  //       return;
+  //     }
+  //
+  //     await supabase.from(SupabaseConfig.tokensTable).insert({
+  //       'token_number': tokenNumber,
+  //       'serial_number': serialNumber,
+  //       'print_sequence': 1,
+  //       'status': 'active',
+  //       'valid_from': validFrom.toIso8601String(),
+  //       'valid_until': validUntil.toIso8601String(),
+  //       'vehicle_number': vehicleNumber,
+  //       'weight_in_kg': weightInKg,
+  //       'material_type': materialType,
+  //       'created_by': currentUser?.id,
+  //       'created_at': DateTime.now().toIso8601String(),
+  //       'print_count': 0,
+  //     });
+  //
+  //     await loadTokens();
+  //     await loadNextSerialNumber();
+  //
+  //     Get.back();
+  //     Get.snackbar(
+  //       'Success',
+  //       'Token $tokenNumber created successfully',
+  //       backgroundColor: Colors.green,
+  //       colorText: Colors.white,
+  //       icon: const Icon(Icons.check_circle, color: Colors.white),
+  //       duration: const Duration(seconds: 3),
+  //     );
+  //   } catch (e) {
+  //     // Get.snackbar(
+  //     //   'Error',
+  //     //   'Failed to create token: ${e.toString()}',
+  //     //   backgroundColor: Colors.red,
+  //     //   colorText: Colors.white,
+  //     // );
+  //     print('Create token error: $e');
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   Future<void> updateTokenStatus(String tokenId, String newStatus) async {
     try {

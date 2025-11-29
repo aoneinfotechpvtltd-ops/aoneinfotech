@@ -477,7 +477,7 @@ class HomePageScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildDeveloperCard('Kunal', Colors.blue),
+              _buildDeveloperCard('Krunal Kumar', Colors.blue),
               Container(
                 height: 50,
                 width: 1,

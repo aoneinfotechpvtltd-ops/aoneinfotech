@@ -624,24 +624,24 @@ class SystemSettingsScreen extends StatelessWidget {
               )),
             ],
           ),
-          const SizedBox(height: 16),
-          _buildSettingSection(
-            'Security Settings',
-            [
-              Obx(() => SwitchListTile(
-                title: const Text('Require 2FA'),
-                subtitle: const Text('Two-factor authentication for login'),
-                value: require2FA.value,
-                onChanged: (value) => require2FA.value = value,
-              )),
-              Obx(() => SwitchListTile(
-                title: const Text('QR Verification'),
-                subtitle: const Text('Enable QR code verification'),
-                value: qrVerification.value,
-                onChanged: (value) => qrVerification.value = value,
-              )),
-            ],
-          ),
+          // const SizedBox(height: 16),
+          // _buildSettingSection(
+          //   'Security Settings',
+          //   [
+          //     Obx(() => SwitchListTile(
+          //       title: const Text('Require 2FA'),
+          //       subtitle: const Text('Two-factor authentication for login'),
+          //       value: require2FA.value,
+          //       onChanged: (value) => require2FA.value = value,
+          //     )),
+          //     Obx(() => SwitchListTile(
+          //       title: const Text('QR Verification'),
+          //       subtitle: const Text('Enable QR code verification'),
+          //       value: qrVerification.value,
+          //       onChanged: (value) => qrVerification.value = value,
+          //     )),
+          //   ],
+          // ),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () {

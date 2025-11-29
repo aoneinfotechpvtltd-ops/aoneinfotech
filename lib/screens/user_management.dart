@@ -2053,7 +2053,7 @@ class TokenManagementScreen extends StatelessWidget {
             itemCount: controller.tokens.length,
             itemBuilder: (context, index) {
               final token = controller.tokens[index];
-              return _buildTokenCard(context,token, controller, currentRole);
+              return buildTokenCard(token,controller);
             },
           ),
         );
@@ -2066,194 +2066,184 @@ class TokenManagementScreen extends StatelessWidget {
       ).animate().scale(delay: 300.ms),
     );
   }
+// Updated Token Card Widget showing all fields
 
-  Widget _buildTokenCard(BuildContext context,
-      TokenModel token, TokenController controller, String? currentRole) {
-    final isValid = token.isValid;
-    final canDelete = currentRole == 'super_admin';
-    final serialStr = token.serialNumber.toString().padLeft(8, '0');
-    final printSeqStr = token.printSequence.toString().padLeft(8, '0');
-
+  Widget buildTokenCard(TokenModel token,TokenController controller) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Header Row
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: (isValid ? AppColors.success : AppColors.error)
-                        .withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    Icons.token,
-                    color: isValid ? AppColors.success : AppColors.error,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
+                // Token Number
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        token.tokenNumber,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                      const Text(
+                        'Token No',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'SN: $serialStr',
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.info.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'Seq: $printSeqStr',
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: AppColors.info,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        token.tokenNumber,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
                       ),
                     ],
                   ),
                 ),
+                // Status Badge
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: (isValid ? AppColors.success : AppColors.error)
-                        .withOpacity(0.1),
+                    color: _getStatusColor(token.status).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: _getStatusColor(token.status),
+                    ),
                   ),
                   child: Text(
                     token.status.toUpperCase(),
                     style: TextStyle(
-                      fontSize: 10,
+                      color: _getStatusColor(token.status),
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: isValid ? AppColors.success : AppColors.error,
                     ),
                   ),
                 ),
               ],
             ),
             const Divider(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildInfoColumn(
-                    'Vehicle',
-                    token.vehicleNumber ?? 'Not Assigned',
-                  ),
-                ),
-                Expanded(
-                  child: _buildInfoColumn(
-                    'Material',
-                    token.materialType ?? 'N/A',
-                  ),
-                ),
-              ],
+
+            // Driver Information
+            _buildInfoRow(
+              Icons.person,
+              'Driver Name',
+              token.driverName,
             ),
-            const SizedBox(height: 12),
-            if (token.weightInKg != null)
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildInfoColumn(
-                      'Weight',
-                      '${token.weightInKg} Kg',
-                    ),
-                  ),
-                  Expanded(
-                    child: _buildInfoColumn(
-                      'Print Count',
-                      token.printCount.toString(),
-                    ),
-                  ),
-                ],
+            const SizedBox(height: 8),
+            _buildInfoRow(
+              Icons.phone,
+              'Driver Mobile',
+              token.driverMobile,
+            ),
+            const SizedBox(height: 8),
+
+            // Vehicle Information
+            _buildInfoRow(
+              Icons.local_shipping,
+              'Vehicle No',
+              token.vehicleNumber,
+            ),
+            const SizedBox(height: 8),
+            if (token.vehicleType != null)
+              _buildInfoRow(
+                Icons.directions_car,
+                'Vehicle Type',
+                token.vehicleType!,
               ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
+
+            // Quantity
+            _buildInfoRow(
+              Icons.scale,
+              'Quantity',
+              '${token.quantity} CFT',
+            ),
+            const SizedBox(height: 8),
+
+            // Place
+            if (token.place != null && token.place!.isNotEmpty)
+              _buildInfoRow(
+                Icons.location_on,
+                'Place',
+                token.place!,
+              ),
+            const SizedBox(height: 8),
+
+            // Supervisor Name
+            _buildInfoRow(
+              Icons.supervisor_account,
+              'Supervisor',
+              token.supervisorName,
+            ),
+
+            // Material Type (if exists)
+            if (token.materialType != null && token.materialType!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              _buildInfoRow(
+                Icons.inventory_2,
+                'Material',
+                token.materialType!,
+              ),
+            ],
+
+            const Divider(height: 24),
+
+            // Footer: Serial Number and Print Count
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: _buildInfoColumn(
-                    'Valid From',
-                    '${token.validFrom.day.toString().padLeft(2, '0')}/${token.validFrom.month.toString().padLeft(2, '0')}/${token.validFrom.year}',
+                Text(
+                  'Serial: #${token.serialNumber}',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
                   ),
                 ),
-                Expanded(
-                  child: _buildInfoColumn(
-                    'Valid Until',
-                    '${token.validUntil.day.toString().padLeft(2, '0')}/${token.validUntil.month.toString().padLeft(2, '0')}/${token.validUntil.year}',
+                Text(
+                  'Printed: ${token.printCount}x',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+
+            // Action Buttons
+            const SizedBox(height: 12),
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                if (canDelete)
-                  TextButton.icon(
-                    onPressed: () => _showDeleteConfirmation(
-                      context,
-                      token,
-                      controller,
-                    ),
-                    icon: const Icon(Icons.delete, size: 18),
-                    label: const Text('Delete'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.error,
-                    ),
-                  ),
-                const SizedBox(width: 8),
-                ElevatedButton.icon(
-                  onPressed: () => generateTokenPDF(token),
-                  icon: const Icon(Icons.print, size: 18),
-                  label: const Text('Print Token'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                  ),
+                // Expanded(
+                //   child: ElevatedButton.icon(
+                //     onPressed: () {
+                //       // Print token action
+                //     },
+                //     icon: const Icon(Icons.print, size: 18),
+                //     label: const Text('Print'),
+                //     style: ElevatedButton.styleFrom(
+                //       backgroundColor: AppColors.info,
+                //       foregroundColor: Colors.white,
+                //     ),
+                //   ),
+                // ),
+                // const SizedBox(width: 8),
+                IconButton(
+                  onPressed: () {
+                   controller.deleteToken(token.id);
+                    // More options
+                  },
+                  icon: const Icon(Icons.delete,color: Colors.red,),
                 ),
               ],
             ),
@@ -2262,6 +2252,239 @@ class TokenManagementScreen extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: Colors.grey),
+        const SizedBox(width: 8),
+        Text(
+          '$label: ',
+          style: const TextStyle(
+            fontSize: 13,
+            color: Colors.grey,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return Colors.green;
+      case 'used':
+        return Colors.orange;
+      case 'expired':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+  // Widget _buildTokenCard(BuildContext context,
+  //     TokenModel token, TokenController controller, String? currentRole) {
+  //   final isValid = token.isValid;
+  //   final canDelete = currentRole == 'super_admin';
+  //   final serialStr = token.serialNumber.toString().padLeft(8, '0');
+  //   final printSeqStr = token.printSequence.toString().padLeft(8, '0');
+  //
+  //   return Card(
+  //     margin: const EdgeInsets.only(bottom: 12),
+  //     elevation: 2,
+  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  //     child: Padding(
+  //       padding: const EdgeInsets.all(16),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Row(
+  //             children: [
+  //               Container(
+  //                 padding: const EdgeInsets.all(10),
+  //                 decoration: BoxDecoration(
+  //                   color: (isValid ? AppColors.success : AppColors.error)
+  //                       .withOpacity(0.1),
+  //                   borderRadius: BorderRadius.circular(10),
+  //                 ),
+  //                 child: Icon(
+  //                   Icons.token,
+  //                   color: isValid ? AppColors.success : AppColors.error,
+  //                   size: 24,
+  //                 ),
+  //               ),
+  //               const SizedBox(width: 12),
+  //               Expanded(
+  //                 child: Column(
+  //                   crossAxisAlignment: CrossAxisAlignment.start,
+  //                   children: [
+  //                     Text(
+  //                       token.tokenNumber,
+  //                       style: const TextStyle(
+  //                         fontWeight: FontWeight.bold,
+  //                         fontSize: 16,
+  //                       ),
+  //                     ),
+  //                     const SizedBox(height: 4),
+  //                     Row(
+  //                       children: [
+  //                         Container(
+  //                           padding: const EdgeInsets.symmetric(
+  //                             horizontal: 8,
+  //                             vertical: 4,
+  //                           ),
+  //                           decoration: BoxDecoration(
+  //                             color: AppColors.primary.withOpacity(0.1),
+  //                             borderRadius: BorderRadius.circular(4),
+  //                           ),
+  //                           child: Text(
+  //                             'SN: $serialStr',
+  //                             style: const TextStyle(
+  //                               fontSize: 10,
+  //                               color: AppColors.primary,
+  //                               fontWeight: FontWeight.bold,
+  //                             ),
+  //                           ),
+  //                         ),
+  //                         const SizedBox(width: 8),
+  //                         Container(
+  //                           padding: const EdgeInsets.symmetric(
+  //                             horizontal: 8,
+  //                             vertical: 4,
+  //                           ),
+  //                           decoration: BoxDecoration(
+  //                             color: AppColors.info.withOpacity(0.1),
+  //                             borderRadius: BorderRadius.circular(4),
+  //                           ),
+  //                           child: Text(
+  //                             'Seq: $printSeqStr',
+  //                             style: const TextStyle(
+  //                               fontSize: 10,
+  //                               color: AppColors.info,
+  //                               fontWeight: FontWeight.bold,
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //               Container(
+  //                 padding: const EdgeInsets.symmetric(
+  //                   horizontal: 12,
+  //                   vertical: 6,
+  //                 ),
+  //                 decoration: BoxDecoration(
+  //                   color: (isValid ? AppColors.success : AppColors.error)
+  //                       .withOpacity(0.1),
+  //                   borderRadius: BorderRadius.circular(20),
+  //                 ),
+  //                 child: Text(
+  //                   token.status.toUpperCase(),
+  //                   style: TextStyle(
+  //                     fontSize: 10,
+  //                     fontWeight: FontWeight.bold,
+  //                     color: isValid ? AppColors.success : AppColors.error,
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //           const Divider(height: 24),
+  //           Row(
+  //             children: [
+  //               Expanded(
+  //                 child: _buildInfoColumn(
+  //                   'Vehicle',
+  //                   token.vehicleNumber ?? 'Not Assigned',
+  //                 ),
+  //               ),
+  //               Expanded(
+  //                 child: _buildInfoColumn(
+  //                   'Material',
+  //                   token.materialType ?? 'N/A',
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //           const SizedBox(height: 12),
+  //           if (token.weightInKg != null)
+  //             Row(
+  //               children: [
+  //                 Expanded(
+  //                   child: _buildInfoColumn(
+  //                     'Weight',
+  //                     '${token.weightInKg} Kg',
+  //                   ),
+  //                 ),
+  //                 Expanded(
+  //                   child: _buildInfoColumn(
+  //                     'Print Count',
+  //                     token.printCount.toString(),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           const SizedBox(height: 12),
+  //           Row(
+  //             children: [
+  //               Expanded(
+  //                 child: _buildInfoColumn(
+  //                   'Valid From',
+  //                   '${token.validFrom.day.toString().padLeft(2, '0')}/${token.validFrom.month.toString().padLeft(2, '0')}/${token.validFrom.year}',
+  //                 ),
+  //               ),
+  //               Expanded(
+  //                 child: _buildInfoColumn(
+  //                   'Valid Until',
+  //                   '${token.validUntil.day.toString().padLeft(2, '0')}/${token.validUntil.month.toString().padLeft(2, '0')}/${token.validUntil.year}',
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //           const SizedBox(height: 16),
+  //           Row(
+  //             mainAxisAlignment: MainAxisAlignment.end,
+  //             children: [
+  //               if (canDelete)
+  //                 TextButton.icon(
+  //                   onPressed: () => _showDeleteConfirmation(
+  //                     context,
+  //                     token,
+  //                     controller,
+  //                   ),
+  //                   icon: const Icon(Icons.delete, size: 18),
+  //                   label: const Text('Delete'),
+  //                   style: TextButton.styleFrom(
+  //                     foregroundColor: AppColors.error,
+  //                   ),
+  //                 ),
+  //               const SizedBox(width: 8),
+  //               ElevatedButton.icon(
+  //                 onPressed: () => generateTokenPDF(token),
+  //                 icon: const Icon(Icons.print, size: 18),
+  //                 label: const Text('Print Token'),
+  //                 style: ElevatedButton.styleFrom(
+  //                   backgroundColor: AppColors.primary,
+  //                   foregroundColor: Colors.white,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildInfoColumn(String label, String value) {
     return Column(
@@ -2288,16 +2511,38 @@ class TokenManagementScreen extends StatelessWidget {
 
   void _showAddTokenDialog(BuildContext context, TokenController controller) {
     final formKey = GlobalKey<FormState>();
+    final driverNameController = TextEditingController();
+    final driverMobileController = TextEditingController();
     final vehicleNumberController = TextEditingController();
-    final weightController = TextEditingController();
     final materialController = TextEditingController();
+    final placeController = TextEditingController();
+
     final validFrom = DateTime.now().obs;
     final validUntil = DateTime.now().add(const Duration(days: 30)).obs;
+    final selectedVehicleType = Rx<String?>(null);
+    final selectedQuantity = Rx<int?>(0);
+
+    // Vehicle types list
+    final vehicleTypes = [
+      'TRACTOR (100 CFT)',
+      'MINI HAIVA (150 CFT)',
+      '06 TAYER (300 CFT)',
+      '10 TAYER (450 CFT)',
+      '12 TAYER (600 CFT)',
+      '14 TAYER (750 CFT)',
+      '16 TAYER (775 CFT)',
+      '18 TAYER (800 CFT)',
+      '22 TAYER (850 CFT)',
+    ];
+
+    // Quantity list
+    final quantities = [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500,
+      550, 600, 650, 700, 750, 800, 850, 900, 950, 1000];
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Create New Token'),
+        title: const Text('Add Print Token'),
         content: Form(
           key: formKey,
           child: SingleChildScrollView(
@@ -2326,16 +2571,131 @@ class TokenManagementScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
+
+                // Driver Name
+                TextFormField(
+                  controller: driverNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Driver Name *',
+                    prefixIcon: Icon(Icons.person),
+                    hintText: 'Enter driver name',
+                  ),
+                  textCapitalization: TextCapitalization.words,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Driver name is required';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Driver Mobile
+                TextFormField(
+                  controller: driverMobileController,
+                  decoration: const InputDecoration(
+                    labelText: 'Driver Mobile No *',
+                    prefixIcon: Icon(Icons.phone),
+                    hintText: 'Enter 10 digit mobile number',
+                  ),
+                  keyboardType: TextInputType.phone,
+                  maxLength: 10,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Mobile number is required';
+                    }
+                    if (value.trim().length != 10) {
+                      return 'Mobile number must be 10 digits';
+                    }
+                    if (!RegExp(r'^[0-9]+$').hasMatch(value.trim())) {
+                      return 'Only numbers allowed';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Vehicle Number
                 TextFormField(
                   controller: vehicleNumberController,
                   decoration: const InputDecoration(
-                    labelText: 'Vehicle Number',
+                    labelText: 'Vehicle Number *',
                     prefixIcon: Icon(Icons.local_shipping),
                     hintText: 'e.g., GJ01AB1234',
                   ),
                   textCapitalization: TextCapitalization.characters,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Vehicle number is required';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 12),
+
+                // Vehicle Type Dropdown
+                Obx(() => DropdownButtonFormField<String>(
+                  value: selectedVehicleType.value,
+                  decoration: const InputDecoration(
+                    labelText: 'Vehicle Type *',
+                    prefixIcon: Icon(Icons.local_shipping),
+                  ),
+                  items: vehicleTypes.map((type) {
+                    return DropdownMenuItem(
+                      value: type,
+                      child: Text(type, style: const TextStyle(fontSize: 13)),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    selectedVehicleType.value = value;
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Vehicle type is required';
+                    }
+                    return null;
+                  },
+                )),
+                const SizedBox(height: 12),
+
+                // Quantity Dropdown
+                Obx(() => DropdownButtonFormField<int>(
+                  value: selectedQuantity.value,
+                  decoration: const InputDecoration(
+                    labelText: 'Quantity *',
+                    prefixIcon: Icon(Icons.scale),
+                  ),
+                  items: quantities.map((qty) {
+                    return DropdownMenuItem(
+                      value: qty,
+                      child: Text(qty.toString()),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    selectedQuantity.value = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Quantity is required';
+                    }
+                    return null;
+                  },
+                )),
+                const SizedBox(height: 12),
+
+                // Place
+                TextFormField(
+                  controller: placeController,
+                  decoration: const InputDecoration(
+                    labelText: 'Place',
+                    prefixIcon: Icon(Icons.location_on),
+                    hintText: 'Enter place/location',
+                  ),
+                  textCapitalization: TextCapitalization.words,
+                ),
+                const SizedBox(height: 12),
+
+                // Material Type
                 TextFormField(
                   controller: materialController,
                   decoration: const InputDecoration(
@@ -2344,16 +2704,8 @@ class TokenManagementScreen extends StatelessWidget {
                     hintText: 'e.g., Sand, Gravel',
                   ),
                 ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: weightController,
-                  decoration: const InputDecoration(
-                    labelText: 'Weight (Kg)',
-                    prefixIcon: Icon(Icons.scale),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
                 const SizedBox(height: 16),
+
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -2393,11 +2745,13 @@ class TokenManagementScreen extends StatelessWidget {
                 controller.createToken(
                   validFrom: validFrom.value,
                   validUntil: validUntil.value,
-                  vehicleNumber: vehicleNumberController.text.trim().isNotEmpty
-                      ? vehicleNumberController.text.trim().toUpperCase()
-                      : null,
-                  weightInKg: weightController.text.trim().isNotEmpty
-                      ? double.tryParse(weightController.text.trim())
+                  driverName: driverNameController.text.trim(),
+                  driverMobile: driverMobileController.text.trim(),
+                  vehicleNumber: vehicleNumberController.text.trim().toUpperCase(),
+                  vehicleType: selectedVehicleType.value,
+                  quantity: selectedQuantity.value ?? 0,
+                  place: placeController.text.trim().isNotEmpty
+                      ? placeController.text.trim()
                       : null,
                   materialType: materialController.text.trim().isNotEmpty
                       ? materialController.text.trim()

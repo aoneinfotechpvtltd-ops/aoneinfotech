@@ -405,112 +405,87 @@ class TokenModel {
   final String tokenNumber;
   final int serialNumber;
   final int printSequence;
-  final int printCount;
   final String status;
   final DateTime validFrom;
   final DateTime validUntil;
-  final String? vehicleNumber;
+
+  // New fields from HTML
+  final String driverName;
+  final String driverMobile;
+  final String vehicleNumber;
+  final String? vehicleType;
+  final int quantity;
+  final String? place;
+  final String supervisorName;
+
+  // Optional fields
   final String? materialType;
   final double? weightInKg;
+
+  // System fields
   final String? createdBy;
   final DateTime createdAt;
+  final int printCount;
+  final DateTime? lastPrintedAt;
   final DateTime? usedAt;
-  final String? usedBy;
-  // final DateTime? lastPrintedAt;
 
   TokenModel({
     required this.id,
     required this.tokenNumber,
     required this.serialNumber,
     required this.printSequence,
-    required this.printCount,
     required this.status,
     required this.validFrom,
     required this.validUntil,
-    this.vehicleNumber,
+    required this.driverName,
+    required this.driverMobile,
+    required this.vehicleNumber,
+    this.vehicleType,
+    required this.quantity,
+    this.place,
+    required this.supervisorName,
     this.materialType,
     this.weightInKg,
     this.createdBy,
     required this.createdAt,
+    required this.printCount,
+    this.lastPrintedAt,
     this.usedAt,
-    this.usedBy,
-    // this.lastPrintedAt,
   });
-
-  bool get isValid {
-    final now = DateTime.now();
-    return status == 'active' &&
-        now.isAfter(validFrom) &&
-        now.isBefore(validUntil);
-  }
-
-  bool get isExpired {
-    final now = DateTime.now();
-    return now.isAfter(validUntil);
-  }
-
-  bool get isUsed => status == 'used';
-
-  // Display status getter
-  String get statusDisplay {
-    if (status == 'used') return 'USED';
-    if (isExpired) return 'EXPIRED';
-    if (isValid) return 'ACTIVE';
-    return status.toUpperCase();
-  }
-
-  // Status color getter
-  String get statusColor {
-    if (status == 'used') return 'error';
-    if (isExpired) return 'error';
-    if (isValid) return 'success';
-    return 'warning';
-  }
-
-  // Check if can be printed
-  bool get canBePrinted {
-    return status == 'active' && isValid;
-  }
-
-  // Check if can be used
-  bool get canBeUsed {
-    return status == 'active' && isValid && !isUsed;
-  }
 
   factory TokenModel.fromJson(Map<String, dynamic> json) {
     return TokenModel(
-      id: json['id'] ?? '',
-      tokenNumber: json['token_number'] ?? '',
-      serialNumber: (json['serial_number'] as num?)?.toInt() ?? 0,
+      id: json['id'] as String,
+      tokenNumber: json['token_number'] as String,
+      serialNumber: (json['serial_number'] as num).toInt(),
       printSequence: (json['print_sequence'] as num?)?.toInt() ?? 1,
+      status: json['status'] as String,
+      validFrom: DateTime.parse(json['valid_from'] as String),
+      validUntil: DateTime.parse(json['valid_until'] as String),
+
+      // New fields
+      driverName: json['driver_name'] as String? ?? '',
+      driverMobile: json['driver_mobile'] as String? ?? '',
+      vehicleNumber: json['vehicle_number'] as String? ?? '',
+      vehicleType: json['vehicle_type'] as String?,
+      quantity: (json['quantity'] as num?)?.toInt() ?? 0,
+      place: json['place'] as String?,
+      supervisorName: json['supervisor_name'] as String? ?? '',
+
+      // Optional fields
+      materialType: json['material_type'] as String?,
+      weightInKg: (json['weight_in_kg'] as num?)?.toDouble(),
+
+      // System fields
+      createdBy: json['created_by'] as String?,
+      createdAt: DateTime.parse(json['created_at'] as String),
       printCount: (json['print_count'] as num?)?.toInt() ?? 0,
-      status: json['status'] ?? 'active',
-      validFrom: json['valid_from'] is String
-          ? DateTime.parse(json['valid_from'])
-          : (json['valid_from'] as DateTime),
-      validUntil: json['valid_until'] is String
-          ? DateTime.parse(json['valid_until'])
-          : (json['valid_until'] as DateTime),
-      vehicleNumber: json['vehicle_number'],
-      materialType: json['material_type'],
-      weightInKg: json['weight_in_kg'] != null
-          ? double.parse(json['weight_in_kg'].toString())
+      lastPrintedAt: json['last_printed_at'] != null
+          ? DateTime.parse(json['last_printed_at'] as String)
           : null,
-      createdBy: json['created_by'],
-      createdAt: json['created_at'] is String
-          ? DateTime.parse(json['created_at'])
-          : (json['created_at'] as DateTime? ?? DateTime.now()),
       usedAt: json['used_at'] != null
-          ? (json['used_at'] is String
-          ? DateTime.parse(json['used_at'])
-          : (json['used_at'] as DateTime))
+          ? DateTime.parse(json['used_at'] as String)
           : null,
-      usedBy: json['used_by'],
-      // lastPrintedAt: json['last_printed_at'] != null
-      //     ? (json['last_printed_at'] is String
-      //     ? DateTime.parse(json['last_printed_at'])
-      //     : (json['last_printed_at'] as DateTime))
-      //     : null,
     );
   }
 
@@ -520,62 +495,202 @@ class TokenModel {
       'token_number': tokenNumber,
       'serial_number': serialNumber,
       'print_sequence': printSequence,
-      'print_count': printCount,
       'status': status,
       'valid_from': validFrom.toIso8601String(),
       'valid_until': validUntil.toIso8601String(),
+      'driver_name': driverName,
+      'driver_mobile': driverMobile,
       'vehicle_number': vehicleNumber,
+      'vehicle_type': vehicleType,
+      'quantity': quantity,
+      'place': place,
+      'supervisor_name': supervisorName,
       'material_type': materialType,
       'weight_in_kg': weightInKg,
       'created_by': createdBy,
       'created_at': createdAt.toIso8601String(),
+      'print_count': printCount,
+      'last_printed_at': lastPrintedAt?.toIso8601String(),
       'used_at': usedAt?.toIso8601String(),
-      'used_by': usedBy,
-      // 'last_printed_at': lastPrintedAt?.toIso8601String(),
     };
   }
-
-  TokenModel copyWith({
-    String? id,
-    String? tokenNumber,
-    int? serialNumber,
-    int? printSequence,
-    int? printCount,
-    String? status,
-    DateTime? validFrom,
-    DateTime? validUntil,
-    String? vehicleNumber,
-    String? materialType,
-    double? weightInKg,
-    String? createdBy,
-    DateTime? createdAt,
-    DateTime? usedAt,
-    String? usedBy,
-    DateTime? lastPrintedAt,
-  }) {
-    return TokenModel(
-      id: id ?? this.id,
-      tokenNumber: tokenNumber ?? this.tokenNumber,
-      serialNumber: serialNumber ?? this.serialNumber,
-      printSequence: printSequence ?? this.printSequence,
-      printCount: printCount ?? this.printCount,
-      status: status ?? this.status,
-      validFrom: validFrom ?? this.validFrom,
-      validUntil: validUntil ?? this.validUntil,
-      vehicleNumber: vehicleNumber ?? this.vehicleNumber,
-      materialType: materialType ?? this.materialType,
-      weightInKg: weightInKg ?? this.weightInKg,
-      createdBy: createdBy ?? this.createdBy,
-      createdAt: createdAt ?? this.createdAt,
-      usedAt: usedAt ?? this.usedAt,
-      usedBy: usedBy ?? this.usedBy,
-      // lastPrintedAt: lastPrintedAt ?? this.lastPrintedAt,
-    );
-  }
-
-  @override
-  String toString() => 'TokenModel(id: $id, tokenNumber: $tokenNumber, serialNumber: $serialNumber, status: $status)';
 }
+// class TokenModel {
+//   final String id;
+//   final String tokenNumber;
+//   final int serialNumber;
+//   final int printSequence;
+//   final int printCount;
+//   final String status;
+//   final DateTime validFrom;
+//   final DateTime validUntil;
+//   final String? vehicleNumber;
+//   final String? materialType;
+//   final double? weightInKg;
+//   final String? createdBy;
+//   final DateTime createdAt;
+//   final DateTime? usedAt;
+//   final String? usedBy;
+//   // final DateTime? lastPrintedAt;
+//
+//   TokenModel({
+//     required this.id,
+//     required this.tokenNumber,
+//     required this.serialNumber,
+//     required this.printSequence,
+//     required this.printCount,
+//     required this.status,
+//     required this.validFrom,
+//     required this.validUntil,
+//     this.vehicleNumber,
+//     this.materialType,
+//     this.weightInKg,
+//     this.createdBy,
+//     required this.createdAt,
+//     this.usedAt,
+//     this.usedBy,
+//     // this.lastPrintedAt,
+//   });
+//
+//   bool get isValid {
+//     final now = DateTime.now();
+//     return status == 'active' &&
+//         now.isAfter(validFrom) &&
+//         now.isBefore(validUntil);
+//   }
+//
+//   bool get isExpired {
+//     final now = DateTime.now();
+//     return now.isAfter(validUntil);
+//   }
+//
+//   bool get isUsed => status == 'used';
+//
+//   // Display status getter
+//   String get statusDisplay {
+//     if (status == 'used') return 'USED';
+//     if (isExpired) return 'EXPIRED';
+//     if (isValid) return 'ACTIVE';
+//     return status.toUpperCase();
+//   }
+//
+//   // Status color getter
+//   String get statusColor {
+//     if (status == 'used') return 'error';
+//     if (isExpired) return 'error';
+//     if (isValid) return 'success';
+//     return 'warning';
+//   }
+//
+//   // Check if can be printed
+//   bool get canBePrinted {
+//     return status == 'active' && isValid;
+//   }
+//
+//   // Check if can be used
+//   bool get canBeUsed {
+//     return status == 'active' && isValid && !isUsed;
+//   }
+//
+//   factory TokenModel.fromJson(Map<String, dynamic> json) {
+//     return TokenModel(
+//       id: json['id'] ?? '',
+//       tokenNumber: json['token_number'] ?? '',
+//       serialNumber: (json['serial_number'] as num?)?.toInt() ?? 0,
+//       printSequence: (json['print_sequence'] as num?)?.toInt() ?? 1,
+//       printCount: (json['print_count'] as num?)?.toInt() ?? 0,
+//       status: json['status'] ?? 'active',
+//       validFrom: json['valid_from'] is String
+//           ? DateTime.parse(json['valid_from'])
+//           : (json['valid_from'] as DateTime),
+//       validUntil: json['valid_until'] is String
+//           ? DateTime.parse(json['valid_until'])
+//           : (json['valid_until'] as DateTime),
+//       vehicleNumber: json['vehicle_number'],
+//       materialType: json['material_type'],
+//       weightInKg: json['weight_in_kg'] != null
+//           ? double.parse(json['weight_in_kg'].toString())
+//           : null,
+//       createdBy: json['created_by'],
+//       createdAt: json['created_at'] is String
+//           ? DateTime.parse(json['created_at'])
+//           : (json['created_at'] as DateTime? ?? DateTime.now()),
+//       usedAt: json['used_at'] != null
+//           ? (json['used_at'] is String
+//           ? DateTime.parse(json['used_at'])
+//           : (json['used_at'] as DateTime))
+//           : null,
+//       usedBy: json['used_by'],
+//       // lastPrintedAt: json['last_printed_at'] != null
+//       //     ? (json['last_printed_at'] is String
+//       //     ? DateTime.parse(json['last_printed_at'])
+//       //     : (json['last_printed_at'] as DateTime))
+//       //     : null,
+//     );
+//   }
+//
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'id': id,
+//       'token_number': tokenNumber,
+//       'serial_number': serialNumber,
+//       'print_sequence': printSequence,
+//       'print_count': printCount,
+//       'status': status,
+//       'valid_from': validFrom.toIso8601String(),
+//       'valid_until': validUntil.toIso8601String(),
+//       'vehicle_number': vehicleNumber,
+//       'material_type': materialType,
+//       'weight_in_kg': weightInKg,
+//       'created_by': createdBy,
+//       'created_at': createdAt.toIso8601String(),
+//       'used_at': usedAt?.toIso8601String(),
+//       'used_by': usedBy,
+//       // 'last_printed_at': lastPrintedAt?.toIso8601String(),
+//     };
+//   }
+//
+//   TokenModel copyWith({
+//     String? id,
+//     String? tokenNumber,
+//     int? serialNumber,
+//     int? printSequence,
+//     int? printCount,
+//     String? status,
+//     DateTime? validFrom,
+//     DateTime? validUntil,
+//     String? vehicleNumber,
+//     String? materialType,
+//     double? weightInKg,
+//     String? createdBy,
+//     DateTime? createdAt,
+//     DateTime? usedAt,
+//     String? usedBy,
+//     DateTime? lastPrintedAt,
+//   }) {
+//     return TokenModel(
+//       id: id ?? this.id,
+//       tokenNumber: tokenNumber ?? this.tokenNumber,
+//       serialNumber: serialNumber ?? this.serialNumber,
+//       printSequence: printSequence ?? this.printSequence,
+//       printCount: printCount ?? this.printCount,
+//       status: status ?? this.status,
+//       validFrom: validFrom ?? this.validFrom,
+//       validUntil: validUntil ?? this.validUntil,
+//       vehicleNumber: vehicleNumber ?? this.vehicleNumber,
+//       materialType: materialType ?? this.materialType,
+//       weightInKg: weightInKg ?? this.weightInKg,
+//       createdBy: createdBy ?? this.createdBy,
+//       createdAt: createdAt ?? this.createdAt,
+//       usedAt: usedAt ?? this.usedAt,
+//       usedBy: usedBy ?? this.usedBy,
+//       // lastPrintedAt: lastPrintedAt ?? this.lastPrintedAt,
+//     );
+//   }
+//
+//   @override
+//   String toString() => 'TokenModel(id: $id, tokenNumber: $tokenNumber, serialNumber: $serialNumber, status: $status)';
+// }
 class ChallanModel {
   final String id;
   final String challanNumber;
