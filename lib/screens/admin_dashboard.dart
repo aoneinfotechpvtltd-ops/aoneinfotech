@@ -1,3 +1,4 @@
+import 'package:aoneinfotech/screens/user_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -1029,12 +1030,12 @@ class SuperAdminDashboard extends StatelessWidget {
                   title: 'Print Token Report',
                   onTap: () => Get.toNamed(AppRoutes.tokenReport, arguments: {"isAdmin": false}),
                 ),
-                _buildSidebarItem(
-                  icon: Icons.receipt_long,
-                  title: 'All Challans',
-                  onTap: () => Get.toNamed(AppRoutes.challanList),
-                  isActive: currentRoute == AppRoutes.challanList,
-                ),
+                // _buildSidebarItem(
+                //   icon: Icons.receipt_long,
+                //   title: 'All Challans',
+                //   onTap: () => Get.toNamed(AppRoutes.challanList),
+                //   isActive: currentRoute == AppRoutes.challanList,
+                // ),
                 _buildSidebarItem(
                   icon: Icons.print,
                   title: 'Reprint Requests',
@@ -1362,25 +1363,25 @@ class SuperAdminDashboard extends StatelessWidget {
       childAspectRatio: 1.2,
       children: [
         _buildStatCard(
-          'Today\'s Challans',
+          'Today\'s Tokens',
           controller.todayChallans.value.toString(),
           Icons.receipt_long,
           AppColors.primary,
         ),
         _buildStatCard(
-          'Week Challans',
+          'Week Tokens',
           controller.weekChallans.value.toString(),
           Icons.calendar_today,
           AppColors.success,
         ),
         _buildStatCard(
-          'Month Challans',
+          'Month Tokens',
           controller.monthChallans.value.toString(),
           Icons.trending_up,
           AppColors.warning,
         ),
         _buildStatCard(
-          'Total Challans',
+          'Total Tokens',
           controller.totalChallans.value.toString(),
           Icons.bar_chart,
           AppColors.info,
@@ -1391,12 +1392,12 @@ class SuperAdminDashboard extends StatelessWidget {
           Icons.verified,
           AppColors.secondary,
         ),
-        _buildStatCard(
-          'All Admins',
-          controller.totalUsers.value.toString(),
-          Icons.admin_panel_settings,
-          AppColors.superAdmin,
-        ),
+        // _buildStatCard(
+        //   'All Admins',
+        //   controller.totalUsers.value.toString(),
+        //   Icons.admin_panel_settings,
+        //   AppColors.superAdmin,
+        // ),
       ],
     ).animate().fadeIn(delay: 200.ms);
   }
@@ -1493,10 +1494,10 @@ class SuperAdminDashboard extends StatelessWidget {
                   () => Get.toNamed(AppRoutes.reprintRequests),
             ),
             _buildActionCard(
-              'All\nChallans',
+              'All\nTokens',
               Icons.list_alt,
               AppColors.primary,
-                  () => Get.toNamed(AppRoutes.challanList),
+                  () => Get.toNamed(AppRoutes.tokenReport),
             ),
             _buildActionCard(
               'Reports &\nAnalytics',
@@ -1628,10 +1629,11 @@ class AdminDashboard extends StatelessWidget {
       ),
 
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Get.toNamed(AppRoutes.createChallan),
+        onPressed:                   () => _showAddTokenDialog(context, tokenController),
+
         backgroundColor: AppColors.admin,
         icon: const Icon(Icons.add),
-        label: const Text('New Challan'),
+        label: const Text('New Token'),
       ).animate().scale(delay: 500.ms),
     );
   }
@@ -1759,12 +1761,12 @@ class AdminDashboard extends StatelessWidget {
                   onTap: () => Get.toNamed(AppRoutes.userManagement),
                   isActive: currentRoute == AppRoutes.userManagement,
                 ),
-                _buildSidebarItem(
-                  icon: Icons.receipt_long,
-                  title: 'All Challans',
-                  onTap: () => Get.toNamed(AppRoutes.challanList),
-                  isActive: currentRoute == AppRoutes.challanList,
-                ),
+                // _buildSidebarItem(
+                //   icon: Icons.receipt_long,
+                //   title: 'All Challans',
+                //   onTap: () => Get.toNamed(AppRoutes.challanList),
+                //   isActive: currentRoute == AppRoutes.challanList,
+                // ),
                 // _buildSidebarItem(
                 //   icon: Icons.print,
                 //   title: 'Reprint Requests',
@@ -1809,12 +1811,12 @@ class AdminDashboard extends StatelessWidget {
                 const Divider(
                     height: 24, thickness: 1, color: Color(0xFFE0E0E0)),
 
-                _buildSidebarItem(
-                  icon: Icons.add_circle_outline,
-                  title: 'Create Challan',
-                  onTap: () => Get.toNamed(AppRoutes.createChallan),
-                  isActive: currentRoute == AppRoutes.createChallan,
-                ),
+                // _buildSidebarItem(
+                //   icon: Icons.add_circle_outline,
+                //   title: 'Create Challan',
+                //   onTap: () => Get.toNamed(AppRoutes.createChallan),
+                //   isActive: currentRoute == AppRoutes.createChallan,
+                // ),
                 _buildSidebarItem(
                   icon: Icons.token,
                   title: 'Create Token',
@@ -2080,7 +2082,7 @@ class AdminDashboard extends StatelessWidget {
       childAspectRatio: 1.5,
       children: [
         _buildStatCard(
-          'Today\'s Challans',
+          'Today\'s Tokens',
           controller.todayChallans.value.toString(),
           Icons.receipt_long,
           AppColors.primary,
@@ -2094,7 +2096,7 @@ class AdminDashboard extends StatelessWidget {
           'Active users',
         ),
         _buildStatCard(
-          'Month Challans',
+          'Month Tokens',
           controller.monthChallans.value.toString(),
           Icons.trending_up,
           AppColors.warning,
@@ -2216,12 +2218,12 @@ class AdminDashboard extends StatelessWidget {
             //   AppColors.error,
             //       () => Get.toNamed(AppRoutes.reprintRequests),
             // ),
-            _buildActionCard(
-              'All Challans',
-              Icons.list_alt,
-              AppColors.warning,
-                  () => Get.toNamed(AppRoutes.challanAdminList),
-            ),
+            // _buildActionCard(
+            //   'All Challans',
+            //   Icons.list_alt,
+            //   AppColors.warning,
+            //       () => Get.toNamed(AppRoutes.challanAdminList),
+            // ),
             _buildActionCard(
               'Reports',
               Icons.assessment,
@@ -2405,6 +2407,249 @@ class AdminDashboard extends StatelessWidget {
       ),
     );
   }
+  // void _showAddTokenDialog(BuildContext context, TokenController controller) {
+  //   final formKey = GlobalKey<FormState>();
+  //   final driverNameController = TextEditingController();
+  //   final driverMobileController = TextEditingController();
+  //   final vehicleNumberController = TextEditingController();
+  //   final materialController = TextEditingController();
+  //   final placeController = TextEditingController();
+  //
+  //   final validFrom = DateTime.now().obs;
+  //   final validUntil = DateTime.now().add(const Duration(days: 30)).obs;
+  //   final selectedVehicleType = Rx<String?>(null);
+  //   final selectedQuantity = Rx<int?>(0);
+  //
+  //   final vehicleTypes = [
+  //     'TRACTOR (100 CFT)',
+  //     'MINI HAIVA (150 CFT)',
+  //     '06 TAYER (300 CFT)',
+  //     '10 TAYER (450 CFT)',
+  //     '12 TAYER (600 CFT)',
+  //     '14 TAYER (750 CFT)',
+  //     '16 TAYER (775 CFT)',
+  //     '18 TAYER (800 CFT)',
+  //     '22 TAYER (850 CFT)',
+  //   ];
+  //
+  //   final quantities = [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500,
+  //     550, 600, 650, 700, 750, 800, 850, 900, 950, 1000];
+  //
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('Add Print Token'),
+  //       content: Form(
+  //         key: formKey,
+  //         child: SingleChildScrollView(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               Container(
+  //                 padding: const EdgeInsets.all(12),
+  //                 decoration: BoxDecoration(
+  //                   color: AppColors.info.withOpacity(0.1),
+  //                   borderRadius: BorderRadius.circular(8),
+  //                 ),
+  //                 child: const Column(
+  //                   children: [
+  //                     Icon(Icons.info, color: AppColors.info),
+  //                     SizedBox(height: 8),
+  //                     Text(
+  //                       'Token Number & Serial Number will be auto-generated',
+  //                       style: TextStyle(
+  //                         fontSize: 12,
+  //                         color: AppColors.info,
+  //                       ),
+  //                       textAlign: TextAlign.center,
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 16),
+  //               TextFormField(
+  //                 controller: driverNameController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Driver Name *',
+  //                   prefixIcon: Icon(Icons.person),
+  //                   hintText: 'Enter driver name',
+  //                 ),
+  //                 textCapitalization: TextCapitalization.words,
+  //                 validator: (value) {
+  //                   if (value == null || value.trim().isEmpty) {
+  //                     return 'Driver name is required';
+  //                   }
+  //                   return null;
+  //                 },
+  //               ),
+  //               const SizedBox(height: 12),
+  //               TextFormField(
+  //                 controller: driverMobileController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Driver Mobile No *',
+  //                   prefixIcon: Icon(Icons.phone),
+  //                   hintText: 'Enter 10 digit mobile number',
+  //                 ),
+  //                 keyboardType: TextInputType.phone,
+  //                 maxLength: 10,
+  //                 validator: (value) {
+  //                   if (value == null || value.trim().isEmpty) {
+  //                     return 'Mobile number is required';
+  //                   }
+  //                   if (value.trim().length != 10) {
+  //                     return 'Mobile number must be 10 digits';
+  //                   }
+  //                   if (!RegExp(r'^[0-9]+$').hasMatch(value.trim())) {
+  //                     return 'Only numbers allowed';
+  //                   }
+  //                   return null;
+  //                 },
+  //               ),
+  //               const SizedBox(height: 12),
+  //               TextFormField(
+  //                 controller: vehicleNumberController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Vehicle Number *',
+  //                   prefixIcon: Icon(Icons.local_shipping),
+  //                   hintText: 'e.g., GJ01AB1234',
+  //                 ),
+  //                 textCapitalization: TextCapitalization.characters,
+  //                 validator: (value) {
+  //                   if (value == null || value.trim().isEmpty) {
+  //                     return 'Vehicle number is required';
+  //                   }
+  //                   return null;
+  //                 },
+  //               ),
+  //               const SizedBox(height: 12),
+  //               Obx(() => DropdownButtonFormField<String>(
+  //                 value: selectedVehicleType.value,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Vehicle Type *',
+  //                   prefixIcon: Icon(Icons.local_shipping),
+  //                 ),
+  //                 items: vehicleTypes.map((type) {
+  //                   return DropdownMenuItem(
+  //                     value: type,
+  //                     child: Text(type, style: const TextStyle(fontSize: 13)),
+  //                   );
+  //                 }).toList(),
+  //                 onChanged: (value) {
+  //                   selectedVehicleType.value = value;
+  //                 },
+  //                 validator: (value) {
+  //                   if (value == null || value.isEmpty) {
+  //                     return 'Vehicle type is required';
+  //                   }
+  //                   return null;
+  //                 },
+  //               )),
+  //               const SizedBox(height: 12),
+  //               Obx(() => DropdownButtonFormField<int>(
+  //                 value: selectedQuantity.value,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Quantity *',
+  //                   prefixIcon: Icon(Icons.scale),
+  //                 ),
+  //                 items: quantities.map((qty) {
+  //                   return DropdownMenuItem(
+  //                     value: qty,
+  //                     child: Text(qty.toString()),
+  //                   );
+  //                 }).toList(),
+  //                 onChanged: (value) {
+  //                   selectedQuantity.value = value;
+  //                 },
+  //                 validator: (value) {
+  //                   if (value == null) {
+  //                     return 'Quantity is required';
+  //                   }
+  //                   return null;
+  //                 },
+  //               )),
+  //               const SizedBox(height: 12),
+  //               TextFormField(
+  //                 controller: placeController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Place',
+  //                   prefixIcon: Icon(Icons.location_on),
+  //                   hintText: 'Enter place/location',
+  //                 ),
+  //                 textCapitalization: TextCapitalization.words,
+  //               ),
+  //               const SizedBox(height: 12),
+  //               TextFormField(
+  //                 controller: materialController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Material Type',
+  //                   prefixIcon: Icon(Icons.inventory_2),
+  //                   hintText: 'e.g., Sand, Gravel',
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 16),
+  //               Container(
+  //                 padding: const EdgeInsets.all(12),
+  //                 decoration: BoxDecoration(
+  //                   color: AppColors.success.withOpacity(0.1),
+  //                   borderRadius: BorderRadius.circular(8),
+  //                 ),
+  //                 child: Column(
+  //                   children: [
+  //                     const Text(
+  //                       'Validity Period',
+  //                       style: TextStyle(
+  //                         fontWeight: FontWeight.bold,
+  //                         fontSize: 14,
+  //                       ),
+  //                     ),
+  //                     const SizedBox(height: 8),
+  //                     Obx(() => Text(
+  //                       'Valid for 30 days from ${validFrom.value.day}/${validFrom.value.month}/${validFrom.value.year}',
+  //                       style: const TextStyle(fontSize: 12),
+  //                       textAlign: TextAlign.center,
+  //                     )),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Get.back(),
+  //           child: const Text('Cancel'),
+  //         ),
+  //         ElevatedButton(
+  //           onPressed: () {
+  //             if (formKey.currentState!.validate()) {
+  //               controller.createToken(
+  //                 validFrom: validFrom.value,
+  //                 validUntil: validUntil.value,
+  //                 driverName: driverNameController.text.trim(),
+  //                 driverMobile: driverMobileController.text.trim(),
+  //                 vehicleNumber: vehicleNumberController.text.trim().toUpperCase(),
+  //                 vehicleType: selectedVehicleType.value,
+  //                 quantity: selectedQuantity.value ?? 0,
+  //                 place: placeController.text.trim().isNotEmpty
+  //                     ? placeController.text.trim()
+  //                     : null,
+  //                 materialType: materialController.text.trim().isNotEmpty
+  //                     ? materialController.text.trim()
+  //                     : null,
+  //               );
+  //             }
+  //           },
+  //           style: ElevatedButton.styleFrom(
+  //             backgroundColor: AppColors.info,
+  //             foregroundColor: Colors.white,
+  //           ),
+  //           child: const Text('Create & Print'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
   void _showAddTokenDialog(BuildContext context, TokenController controller) {
     final formKey = GlobalKey<FormState>();
     final driverNameController = TextEditingController();
@@ -2416,7 +2661,7 @@ class AdminDashboard extends StatelessWidget {
     final validFrom = DateTime.now().obs;
     final validUntil = DateTime.now().add(const Duration(days: 30)).obs;
     final selectedVehicleType = Rx<String?>(null);
-    final selectedQuantity = Rx<int?>(0);
+    // final selectedQuantity = Rx<int?>(0);
 
     final vehicleTypes = [
       'TRACTOR (100 CFT)',
@@ -2430,8 +2675,8 @@ class AdminDashboard extends StatelessWidget {
       '22 TAYER (850 CFT)',
     ];
 
-    final quantities = [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500,
-      550, 600, 650, 700, 750, 800, 850, 900, 950, 1000];
+    // final quantities = [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500,
+    //   550, 600, 650, 700, 750, 800, 850, 900, 950, 1000];
 
     showDialog(
       context: context,
@@ -2511,14 +2756,18 @@ class AdminDashboard extends StatelessWidget {
                     prefixIcon: Icon(Icons.local_shipping),
                     hintText: 'e.g., GJ01AB1234',
                   ),
-                  textCapitalization: TextCapitalization.characters,
+                  textCapitalization: TextCapitalization.characters, // optional
+                  inputFormatters: [
+                    UpperCaseTextFormatter(),
+                  ],
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Vehicle number is required';
                     }
                     return null;
                   },
-                ),
+                )
+                ,
                 const SizedBox(height: 12),
                 Obx(() => DropdownButtonFormField<String>(
                   value: selectedVehicleType.value,
@@ -2543,29 +2792,29 @@ class AdminDashboard extends StatelessWidget {
                   },
                 )),
                 const SizedBox(height: 12),
-                Obx(() => DropdownButtonFormField<int>(
-                  value: selectedQuantity.value,
-                  decoration: const InputDecoration(
-                    labelText: 'Quantity *',
-                    prefixIcon: Icon(Icons.scale),
-                  ),
-                  items: quantities.map((qty) {
-                    return DropdownMenuItem(
-                      value: qty,
-                      child: Text(qty.toString()),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    selectedQuantity.value = value;
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Quantity is required';
-                    }
-                    return null;
-                  },
-                )),
-                const SizedBox(height: 12),
+                // Obx(() => DropdownButtonFormField<int>(
+                //   value: selectedQuantity.value,
+                //   decoration: const InputDecoration(
+                //     labelText: 'Quantity *',
+                //     prefixIcon: Icon(Icons.scale),
+                //   ),
+                //   items: quantities.map((qty) {
+                //     return DropdownMenuItem(
+                //       value: qty,
+                //       child: Text(qty.toString()),
+                //     );
+                //   }).toList(),
+                //   onChanged: (value) {
+                //     selectedQuantity.value = value;
+                //   },
+                //   validator: (value) {
+                //     if (value == null) {
+                //       return 'Quantity is required';
+                //     }
+                //     return null;
+                //   },
+                // )),
+                // const SizedBox(height: 12),
                 TextFormField(
                   controller: placeController,
                   decoration: const InputDecoration(
@@ -2581,7 +2830,7 @@ class AdminDashboard extends StatelessWidget {
                   decoration: const InputDecoration(
                     labelText: 'Material Type',
                     prefixIcon: Icon(Icons.inventory_2),
-                    hintText: 'e.g., Sand, Gravel',
+                    // hintText: 'e.g., Sand, Gravel',
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -2628,7 +2877,7 @@ class AdminDashboard extends StatelessWidget {
                   driverMobile: driverMobileController.text.trim(),
                   vehicleNumber: vehicleNumberController.text.trim().toUpperCase(),
                   vehicleType: selectedVehicleType.value,
-                  quantity: selectedQuantity.value ?? 0,
+                  // quantity: selectedQuantity.value ?? 0,
                   place: placeController.text.trim().isNotEmpty
                       ? placeController.text.trim()
                       : null,

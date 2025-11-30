@@ -591,9 +591,11 @@ class _PrintTokenReportScreenState extends State<PrintTokenReportScreen> {
                     ),
 
                     headingRowHeight: 56,
+
                     dataRowHeight: 72,
                     horizontalMargin: 5,
                     columnSpacing: 10,
+
                     columns: [
                       // Checkbox Column
                     if(!widget.isAdmin)  DataColumn(
@@ -673,17 +675,6 @@ class _PrintTokenReportScreenState extends State<PrintTokenReportScreen> {
                           ),
                         ),
                       ),
-                      // Quantity Column
-                      const DataColumn(
-                        label: Text(
-                          'QUANTITY',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      // Place Column
                       const DataColumn(
                         label: Text(
                           'PLACE',
@@ -693,7 +684,6 @@ class _PrintTokenReportScreenState extends State<PrintTokenReportScreen> {
                           ),
                         ),
                       ),
-                      // Supervisor Name Column
                       const DataColumn(
                         label: Text(
                           'SUPERVISOR NAME',
@@ -703,8 +693,7 @@ class _PrintTokenReportScreenState extends State<PrintTokenReportScreen> {
                           ),
                         ),
                       ),
-                      // Action Column
-                      const DataColumn(
+                      if(!widget.isAdmin) const DataColumn(
                         label: Text(
                           'ACTION',
                           style: TextStyle(
@@ -722,7 +711,6 @@ class _PrintTokenReportScreenState extends State<PrintTokenReportScreen> {
 
                         return DataRow(
                           cells: [
-                            // Checkbox Cell
                            if(!widget.isAdmin) DataCell(
                               Obx(() => Checkbox(
                                 value: selectedTokens.contains(token.id),
@@ -736,7 +724,6 @@ class _PrintTokenReportScreenState extends State<PrintTokenReportScreen> {
                                 activeColor: AppColors.primary,
                               )),
                             ),
-                            // Serial Number Cell (Row Number)
                             DataCell(
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -781,7 +768,6 @@ class _PrintTokenReportScreenState extends State<PrintTokenReportScreen> {
                                 ],
                               ),
                             ),
-                            // Driver Name Cell
                             DataCell(
                               SizedBox(
                                 width: 120,
@@ -798,7 +784,6 @@ class _PrintTokenReportScreenState extends State<PrintTokenReportScreen> {
                                 ),
                               ),
                             ),
-                            // Driver Mobile Cell
                             DataCell(
                               Text(
                                 token.driverMobile.isNotEmpty
@@ -810,7 +795,6 @@ class _PrintTokenReportScreenState extends State<PrintTokenReportScreen> {
                                 ),
                               ),
                             ),
-                            // Vehicle Number Cell
                             DataCell(
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -835,7 +819,6 @@ class _PrintTokenReportScreenState extends State<PrintTokenReportScreen> {
                                 ),
                               ),
                             ),
-                            // Vehicle Type Cell
                             DataCell(
                               SizedBox(
                                 width: 150,
@@ -849,28 +832,6 @@ class _PrintTokenReportScreenState extends State<PrintTokenReportScreen> {
                                 ),
                               ),
                             ),
-                            // Quantity Cell
-                            DataCell(
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.success.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  '${token.quantity}',
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.success,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Place Cell
                             DataCell(
                               SizedBox(
                                 width: 150,

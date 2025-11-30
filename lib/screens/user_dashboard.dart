@@ -1088,6 +1088,7 @@
 import 'package:aoneinfotech/config/print_pdf.dart';
 import 'package:aoneinfotech/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../controllers/auth_controller.dart';
@@ -1152,20 +1153,23 @@ class UserDashboard extends StatelessWidget {
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          FloatingActionButton(
-            heroTag: 'token',
-            onPressed: () => _showAddTokenDialog(context, tokenController),
-            backgroundColor: AppColors.info,
-            child: const Icon(Icons.token),
-            tooltip: 'Create Token',
-          ).animate().scale(delay: 400.ms),
-          const SizedBox(height: 12),
+          // FloatingActionButton(
+          //   heroTag: 'token',
+          //   onPressed: () => _showAddTokenDialog(context, tokenController),
+          //   backgroundColor: AppColors.info,
+          //   child: const Icon(Icons.token),
+          //   tooltip: 'Create Token',
+          // ).animate().scale(delay: 400.ms),
+          // const SizedBox(height: 12),
           FloatingActionButton.extended(
-            heroTag: 'challan',
-            onPressed: () => Get.toNamed(AppRoutes.createChallan),
+            heroTag: 'token',
+            onPressed: () {
+              final tokenController = Get.find<TokenController>();
+              _showAddTokenDialog(Get.context!, tokenController);
+            },
             backgroundColor: AppColors.primary,
             icon: const Icon(Icons.add),
-            label: const Text('New Challan'),
+            label: const Text('New Token'),
           ).animate().scale(delay: 500.ms),
         ],
       ),
@@ -1288,16 +1292,16 @@ class UserDashboard extends StatelessWidget {
                   title: 'Print Token Report',
                   onTap: () => Get.toNamed(AppRoutes.tokenReport, arguments: {"isAdmin": false}),
                 ),
-                _buildSidebarItem(
-                  icon: Icons.verified,
-                  title: 'My Tokens',
-                  onTap: () => Get.toNamed(AppRoutes.tokenManagement),
-                ),
-                _buildSidebarItem(
-                  icon: Icons.list_alt,
-                  title: 'View Challans',
-                  onTap: () => Get.toNamed(AppRoutes.challanList),
-                ),
+                // _buildSidebarItem(
+                //   icon: Icons.verified,
+                //   title: 'My Tokens',
+                //   onTap: () => Get.toNamed(AppRoutes.tokenManagement),
+                // ),
+                // _buildSidebarItem(
+                //   icon: Icons.list_alt,
+                //   title: 'View Challans',
+                //   onTap: () => Get.toNamed(AppRoutes.challanList),
+                // ),
                 _buildSidebarItem(
                   icon: Icons.bar_chart,
                   title: 'Reports',
@@ -1306,11 +1310,11 @@ class UserDashboard extends StatelessWidget {
 
                 const Divider(height: 24, thickness: 1, color: Color(0xFFE0E0E0)),
 
-                _buildSidebarItem(
-                  icon: Icons.add_circle_outline,
-                  title: 'Create Challan',
-                  onTap: () => Get.toNamed(AppRoutes.createChallan),
-                ),
+                // _buildSidebarItem(
+                //   icon: Icons.add_circle_outline,
+                //   title: 'Create Challan',
+                //   onTap: () => Get.toNamed(AppRoutes.createChallan),
+                // ),
                 _buildSidebarItem(
                   icon: Icons.token,
                   title: 'Create Token',
@@ -1557,7 +1561,7 @@ class UserDashboard extends StatelessWidget {
       childAspectRatio: 1.5,
       children: [
         _buildStatCard(
-          'Today\'s Challans',
+          'Today\'s Token',
           controller.todayChallans.value.toString(),
           Icons.receipt_long,
           AppColors.primary,
@@ -1575,8 +1579,8 @@ class UserDashboard extends StatelessWidget {
           AppColors.warning,
         ),
         _buildStatCard(
-          'Total Challans',
-          controller.totalChallans.value.toString(),
+          'Total Tokens',
+          controller.totalTokens.value.toString(),
           Icons.bar_chart,
           AppColors.info,
         ),
@@ -1652,30 +1656,30 @@ class UserDashboard extends StatelessWidget {
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
           children: [
-            _buildActionCard(
-              'Create Challan',
-              Icons.add_circle_outline,
-              AppColors.primary,
-                  () => Get.toNamed(AppRoutes.createChallan),
-            ),
+            // _buildActionCard(
+            //   'Create Challan',
+            //   Icons.add_circle_outline,
+            //   AppColors.primary,
+            //       () => Get.toNamed(AppRoutes.createChallan),
+            // ),
             _buildActionCard(
               'Create Token',
               Icons.token,
               AppColors.info,
                   () => _showAddTokenDialog(context, tokenController),
             ),
-            _buildActionCard(
-              'View Challans',
-              Icons.list_alt,
-              AppColors.success,
-                  () => Get.toNamed(AppRoutes.challanList),
-            ),
-            _buildActionCard(
-              'My Tokens',
-              Icons.verified,
-              AppColors.secondary,
-                  () => Get.toNamed(AppRoutes.tokenManagement),
-            ),
+            // _buildActionCard(
+            //   'View Challans',
+            //   Icons.list_alt,
+            //   AppColors.success,
+            //       () => Get.toNamed(AppRoutes.challanList),
+            // ),
+            // _buildActionCard(
+            //   'My Tokens',
+            //   Icons.verified,
+            //   AppColors.secondary,
+            //       () => Get.toNamed(AppRoutes.tokenManagement),
+            // ),
             _buildActionCard(
               'Print Token Report',
               Icons.receipt_long,
@@ -1760,7 +1764,7 @@ class UserDashboard extends StatelessWidget {
     final validFrom = DateTime.now().obs;
     final validUntil = DateTime.now().add(const Duration(days: 30)).obs;
     final selectedVehicleType = Rx<String?>(null);
-    final selectedQuantity = Rx<int?>(0);
+    // final selectedQuantity = Rx<int?>(0);
 
     final vehicleTypes = [
       'TRACTOR (100 CFT)',
@@ -1774,8 +1778,8 @@ class UserDashboard extends StatelessWidget {
       '22 TAYER (850 CFT)',
     ];
 
-    final quantities = [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500,
-      550, 600, 650, 700, 750, 800, 850, 900, 950, 1000];
+    // final quantities = [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500,
+    //   550, 600, 650, 700, 750, 800, 850, 900, 950, 1000];
 
     showDialog(
       context: context,
@@ -1855,14 +1859,18 @@ class UserDashboard extends StatelessWidget {
                     prefixIcon: Icon(Icons.local_shipping),
                     hintText: 'e.g., GJ01AB1234',
                   ),
-                  textCapitalization: TextCapitalization.characters,
+                  textCapitalization: TextCapitalization.characters, // optional
+                  inputFormatters: [
+                    UpperCaseTextFormatter(),
+                  ],
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Vehicle number is required';
                     }
                     return null;
                   },
-                ),
+                )
+                ,
                 const SizedBox(height: 12),
                 Obx(() => DropdownButtonFormField<String>(
                   value: selectedVehicleType.value,
@@ -1887,29 +1895,29 @@ class UserDashboard extends StatelessWidget {
                   },
                 )),
                 const SizedBox(height: 12),
-                Obx(() => DropdownButtonFormField<int>(
-                  value: selectedQuantity.value,
-                  decoration: const InputDecoration(
-                    labelText: 'Quantity *',
-                    prefixIcon: Icon(Icons.scale),
-                  ),
-                  items: quantities.map((qty) {
-                    return DropdownMenuItem(
-                      value: qty,
-                      child: Text(qty.toString()),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    selectedQuantity.value = value;
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Quantity is required';
-                    }
-                    return null;
-                  },
-                )),
-                const SizedBox(height: 12),
+                // Obx(() => DropdownButtonFormField<int>(
+                //   value: selectedQuantity.value,
+                //   decoration: const InputDecoration(
+                //     labelText: 'Quantity *',
+                //     prefixIcon: Icon(Icons.scale),
+                //   ),
+                //   items: quantities.map((qty) {
+                //     return DropdownMenuItem(
+                //       value: qty,
+                //       child: Text(qty.toString()),
+                //     );
+                //   }).toList(),
+                //   onChanged: (value) {
+                //     selectedQuantity.value = value;
+                //   },
+                //   validator: (value) {
+                //     if (value == null) {
+                //       return 'Quantity is required';
+                //     }
+                //     return null;
+                //   },
+                // )),
+                // const SizedBox(height: 12),
                 TextFormField(
                   controller: placeController,
                   decoration: const InputDecoration(
@@ -1925,7 +1933,7 @@ class UserDashboard extends StatelessWidget {
                   decoration: const InputDecoration(
                     labelText: 'Material Type',
                     prefixIcon: Icon(Icons.inventory_2),
-                    hintText: 'e.g., Sand, Gravel',
+                    // hintText: 'e.g., Sand, Gravel',
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -1972,7 +1980,7 @@ class UserDashboard extends StatelessWidget {
                   driverMobile: driverMobileController.text.trim(),
                   vehicleNumber: vehicleNumberController.text.trim().toUpperCase(),
                   vehicleType: selectedVehicleType.value,
-                  quantity: selectedQuantity.value ?? 0,
+                  // quantity: selectedQuantity.value ?? 0,
                   place: placeController.text.trim().isNotEmpty
                       ? placeController.text.trim()
                       : null,
@@ -1990,6 +1998,18 @@ class UserDashboard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    return newValue.copyWith(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
     );
   }
 }

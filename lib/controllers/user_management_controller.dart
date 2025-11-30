@@ -1362,7 +1362,7 @@ class TokenController extends GetxController {
     final now = DateTime.now();
     final dateStr = '${now.year % 100}${now.month.toString().padLeft(2, '0')}';
     final serial = nextSerialNumber.value.toString().padLeft(4, '0');
-    return 'TKN$dateStr-$serial';
+    return '$serial$dateStr';
   }
 
 
