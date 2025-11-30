@@ -1121,17 +1121,17 @@ class AdminManagementScreen extends StatelessWidget {
                 onPressed: () => _showCreateDialog(context, controller, 'company'),
                 backgroundColor: AppColors.info,
                 heroTag: 'create_company',
-                icon: const Icon(Icons.business),
-                label: const Text('Create Company'),
-              ),
-              const SizedBox(height: 12),
-              FloatingActionButton.extended(
-                onPressed: () => _showCreateDialog(context, controller, 'admin'),
-                backgroundColor: AppColors.superAdmin,
-                heroTag: 'create_admin',
                 icon: const Icon(Icons.person_add),
-                label: const Text('Create Admin'),
+                label: const Text('Add Company/Admin'),
               ),
+              // const SizedBox(height: 12),
+              // FloatingActionButton.extended(
+              //   onPressed: () => _showCreateDialog(context, controller, 'admin'),
+              //   backgroundColor: AppColors.superAdmin,
+              //   heroTag: 'create_admin',
+              //   icon: const Icon(Icons.person_add),
+              //   label: const Text('Create Admin'),
+              // ),
             ],
           );
         }
@@ -1178,7 +1178,7 @@ class AdminManagementScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Create New ${type == 'admin' ? 'Admin' : 'Company'}'),
+        title: Text('Create New Company/Admin'),
         content: Form(
           key: formKey,
           child: SingleChildScrollView(
@@ -1188,7 +1188,7 @@ class AdminManagementScreen extends StatelessWidget {
                 TextFormField(
                   controller: fullNameController,
                   decoration: InputDecoration(
-                    labelText: type == 'company' ? 'Company Owner Name *' : 'Full Name *',
+                    labelText:  'Full Name *',
                     prefixIcon: const Icon(Icons.person),
                   ),
                   validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
@@ -1218,7 +1218,6 @@ class AdminManagementScreen extends StatelessWidget {
                   maxLength: 10,
                   validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                 ),
-                if (type == 'company') ...[
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: companyController,
@@ -1228,16 +1227,6 @@ class AdminManagementScreen extends StatelessWidget {
                     ),
                     validator: (v) => v?.isEmpty ?? true ? 'Company name required' : null,
                   ),
-                ] else ...[
-                  const SizedBox(height: 12),
-                  // TextFormField(
-                  //   controller: companyController,
-                  //   decoration: const InputDecoration(
-                  //     labelText: 'Company Name (Optional)',
-                  //     prefixIcon: Icon(Icons.business),
-                  //   ),
-                  // ),
-                ],
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: passwordController,
@@ -1277,10 +1266,10 @@ class AdminManagementScreen extends StatelessWidget {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: type == 'company' ? AppColors.info : AppColors.superAdmin,
+              backgroundColor:  AppColors.info ,
               foregroundColor: Colors.white,
             ),
-            child: Text('Create ${type == 'admin' ? 'Admin' : 'Company'}'),
+            child: Text('Create Company'),
           ),
         ],
       ),
@@ -3188,23 +3177,26 @@ class EnhancedUserManagementScreen extends StatelessWidget {
       ),
     );
   }
-
   void _showCreateUserDialog(BuildContext context, UserManagementController controller) {
     final formKey = GlobalKey<FormState>();
+
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
     final fullNameController = TextEditingController();
     final phoneController = TextEditingController();
     final companyController = TextEditingController();
+    final queryNameController = TextEditingController();
+
+    int selectedCluster = 1;
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Row(
-          children: [
-            const Icon(Icons.person_add, color: AppColors.admin),
-            const SizedBox(width: 8),
-            const Text('Create New User'),
+          children: const [
+            Icon(Icons.person_add, color: AppColors.admin),
+            SizedBox(width: 8),
+            Text('Create New User'),
           ],
         ),
         content: Form(
@@ -3213,33 +3205,7 @@ class EnhancedUserManagementScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Info Banner
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.info.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.info.withOpacity(0.3)),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.info_outline, color: AppColors.info, size: 20),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'You can create ${2 - controller.userCreationCount.value} more user(s)',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.info,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-
+                // Full Name
                 TextFormField(
                   controller: fullNameController,
                   decoration: const InputDecoration(
@@ -3247,10 +3213,11 @@ class EnhancedUserManagementScreen extends StatelessWidget {
                     prefixIcon: Icon(Icons.person),
                     border: OutlineInputBorder(),
                   ),
-                  validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+                  validator: (v) => v!.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 12),
 
+                // Email
                 TextFormField(
                   controller: emailController,
                   decoration: const InputDecoration(
@@ -3258,15 +3225,13 @@ class EnhancedUserManagementScreen extends StatelessWidget {
                     prefixIcon: Icon(Icons.email),
                     border: OutlineInputBorder(),
                   ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (v) {
-                    if (v?.isEmpty ?? true) return 'Required';
-                    if (!GetUtils.isEmail(v!)) return 'Invalid email';
-                    return null;
-                  },
+                  validator: (v) => v!.isEmpty
+                      ? 'Required'
+                      : (!GetUtils.isEmail(v) ? 'Invalid Email' : null),
                 ),
                 const SizedBox(height: 12),
 
+                // Phone
                 TextFormField(
                   controller: phoneController,
                   decoration: const InputDecoration(
@@ -3274,21 +3239,55 @@ class EnhancedUserManagementScreen extends StatelessWidget {
                     prefixIcon: Icon(Icons.phone),
                     border: OutlineInputBorder(),
                   ),
-                  keyboardType: TextInputType.phone,
                   maxLength: 10,
+                  keyboardType: TextInputType.phone,
                 ),
                 const SizedBox(height: 12),
 
+                // // Company Name Mandatory
+                // TextFormField(
+                //   controller: companyController,
+                //   decoration: const InputDecoration(
+                //     labelText: 'Company Name *',
+                //     prefixIcon: Icon(Icons.business),
+                //     border: OutlineInputBorder(),
+                //   ),
+                //   validator: (v) => v!.isEmpty ? 'Required' : null,
+                // ),
+                // const SizedBox(height: 12),
+
+                // Query Name Mandatory
                 TextFormField(
-                  controller: companyController,
+                  controller: queryNameController,
                   decoration: const InputDecoration(
-                    labelText: 'Company Name (Optional)',
-                    prefixIcon: Icon(Icons.business),
+                    labelText: 'Query Name *',
+                    prefixIcon: Icon(Icons.notes),
                     border: OutlineInputBorder(),
                   ),
+                  validator: (v) => v!.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 12),
 
+                // Cluster Dropdown
+                DropdownButtonFormField<int>(
+                  decoration: const InputDecoration(
+                    labelText: 'Cluster *',
+                    prefixIcon: Icon(Icons.storage),
+                    border: OutlineInputBorder(),
+                  ),
+                  value: selectedCluster,
+                  items: List.generate(
+                    10,
+                        (i) => DropdownMenuItem(
+                      value: i + 1,
+                      child: Text("Cluster ${i + 1}"),
+                    ),
+                  ),
+                  onChanged: (val) => selectedCluster = val!,
+                ),
+                const SizedBox(height: 12),
+
+                // Password
                 TextFormField(
                   controller: passwordController,
                   decoration: const InputDecoration(
@@ -3297,11 +3296,7 @@ class EnhancedUserManagementScreen extends StatelessWidget {
                     border: OutlineInputBorder(),
                   ),
                   obscureText: true,
-                  validator: (v) {
-                    if (v?.isEmpty ?? true) return 'Required';
-                    if (v!.length < 6) return 'Minimum 6 characters';
-                    return null;
-                  },
+                  validator: (v) => v!.length < 6 ? 'Minimum 6 characters' : null,
                 ),
               ],
             ),
@@ -3313,31 +3308,179 @@ class EnhancedUserManagementScreen extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                controller.createUser(
-                  email: emailController.text.trim(),
-                  password: passwordController.text,
-                  fullName: fullNameController.text.trim(),
-                  phone: phoneController.text.trim().isNotEmpty
-                      ? phoneController.text.trim()
-                      : null,
-                  companyName: companyController.text.trim().isNotEmpty
-                      ? companyController.text.trim()
-                      : null,
-                );
-              }
-            },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.admin,
               foregroundColor: Colors.white,
             ),
             child: const Text('Create User'),
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                controller.createUser(
+                  email: emailController.text.trim(),
+                  password: passwordController.text.trim(),
+                  fullName: fullNameController.text.trim(),
+                  phone: phoneController.text.trim().isNotEmpty ? phoneController.text.trim() : null,
+                  companyName: '',
+                  queryName: queryNameController.text.trim(),
+                  cluster: selectedCluster,
+                );
+              }
+            },
           ),
         ],
       ),
     );
   }
+
+  // void _showCreateUserDialog(BuildContext context, UserManagementController controller) {
+  //   final formKey = GlobalKey<FormState>();
+  //   final emailController = TextEditingController();
+  //   final passwordController = TextEditingController();
+  //   final fullNameController = TextEditingController();
+  //   final phoneController = TextEditingController();
+  //   final companyController = TextEditingController();
+  //
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: Row(
+  //         children: [
+  //           const Icon(Icons.person_add, color: AppColors.admin),
+  //           const SizedBox(width: 8),
+  //           const Text('Create New User'),
+  //         ],
+  //       ),
+  //       content: Form(
+  //         key: formKey,
+  //         child: SingleChildScrollView(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               // Info Banner
+  //               Container(
+  //                 padding: const EdgeInsets.all(12),
+  //                 decoration: BoxDecoration(
+  //                   color: AppColors.info.withOpacity(0.1),
+  //                   borderRadius: BorderRadius.circular(8),
+  //                   border: Border.all(color: AppColors.info.withOpacity(0.3)),
+  //                 ),
+  //                 child: Row(
+  //                   children: [
+  //                     const Icon(Icons.info_outline, color: AppColors.info, size: 20),
+  //                     const SizedBox(width: 8),
+  //                     Expanded(
+  //                       child: Text(
+  //                         'You can create ${2 - controller.userCreationCount.value} more user(s)',
+  //                         style: const TextStyle(
+  //                           fontSize: 12,
+  //                           color: AppColors.info,
+  //                           fontWeight: FontWeight.w600,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 16),
+  //
+  //               TextFormField(
+  //                 controller: fullNameController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Full Name *',
+  //                   prefixIcon: Icon(Icons.person),
+  //                   border: OutlineInputBorder(),
+  //                 ),
+  //                 validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+  //               ),
+  //               const SizedBox(height: 12),
+  //
+  //               TextFormField(
+  //                 controller: emailController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Email *',
+  //                   prefixIcon: Icon(Icons.email),
+  //                   border: OutlineInputBorder(),
+  //                 ),
+  //                 keyboardType: TextInputType.emailAddress,
+  //                 validator: (v) {
+  //                   if (v?.isEmpty ?? true) return 'Required';
+  //                   if (!GetUtils.isEmail(v!)) return 'Invalid email';
+  //                   return null;
+  //                 },
+  //               ),
+  //               const SizedBox(height: 12),
+  //
+  //               TextFormField(
+  //                 controller: phoneController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Phone',
+  //                   prefixIcon: Icon(Icons.phone),
+  //                   border: OutlineInputBorder(),
+  //                 ),
+  //                 keyboardType: TextInputType.phone,
+  //                 maxLength: 10,
+  //               ),
+  //               const SizedBox(height: 12),
+  //
+  //               TextFormField(
+  //                 controller: companyController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Company Name (Optional)',
+  //                   prefixIcon: Icon(Icons.business),
+  //                   border: OutlineInputBorder(),
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 12),
+  //
+  //               TextFormField(
+  //                 controller: passwordController,
+  //                 decoration: const InputDecoration(
+  //                   labelText: 'Password *',
+  //                   prefixIcon: Icon(Icons.lock),
+  //                   border: OutlineInputBorder(),
+  //                 ),
+  //                 obscureText: true,
+  //                 validator: (v) {
+  //                   if (v?.isEmpty ?? true) return 'Required';
+  //                   if (v!.length < 6) return 'Minimum 6 characters';
+  //                   return null;
+  //                 },
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Get.back(),
+  //           child: const Text('Cancel'),
+  //         ),
+  //         ElevatedButton(
+  //           onPressed: () {
+  //             if (formKey.currentState!.validate()) {
+  //               controller.createUser(
+  //                 email: emailController.text.trim(),
+  //                 password: passwordController.text,
+  //                 fullName: fullNameController.text.trim(),
+  //                 phone: phoneController.text.trim().isNotEmpty
+  //                     ? phoneController.text.trim()
+  //                     : null,
+  //                 companyName: companyController.text.trim().isNotEmpty
+  //                     ? companyController.text.trim()
+  //                     : null,
+  //               );
+  //             }
+  //           },
+  //           style: ElevatedButton.styleFrom(
+  //             backgroundColor: AppColors.admin,
+  //             foregroundColor: Colors.white,
+  //           ),
+  //           child: const Text('Create User'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }  // void _showAddUserDialog(
   //     BuildContext context,
   //     UserManagementController controller,

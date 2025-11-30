@@ -1041,14 +1041,15 @@ class UserManagementController extends GetxController {
     required String email,
     required String fullName,
     required String password,
+    required int cluster,
+    required String queryName,
+    required String companyName,
     String? phone,
-    String? companyName,
   }) async {
     try {
       isLoading.value = true;
       final currentUser = authController.currentUser.value;
 
-      // ADMIN RESTRICTION: Can only create 2 users
       if (currentUser?.role == 'admin') {
         if (userCreationCount.value >= 2) {
           Get.snackbar(
@@ -1056,21 +1057,17 @@ class UserManagementController extends GetxController {
             'Admin can only create 2 users. You have already created ${userCreationCount.value} users.',
             backgroundColor: Colors.red,
             colorText: Colors.white,
-            duration: const Duration(seconds: 4),
-            icon: const Icon(Icons.block, color: Colors.white),
           );
           return;
         }
       }
 
-      // SUPER ADMIN RESTRICTION: Cannot create regular users
       if (currentUser?.role == 'super_admin') {
         Get.snackbar(
           'Access Denied',
           'Super Admin cannot create regular users. Only admins can create users.',
           backgroundColor: Colors.red,
           colorText: Colors.white,
-          duration: const Duration(seconds: 4),
         );
         return;
       }
@@ -1085,26 +1082,26 @@ class UserManagementController extends GetxController {
           'user_type': 'user',
           'phone': phone,
           'company_name': companyName,
+          'cluster': cluster,
+          'query_name': queryName,
           'created_by': currentUser?.id,
         },
       );
 
       final data = response.data;
-
       if (data is Map && data['error'] != null) {
         throw data['error'];
       }
 
       await loadUsers();
       await checkUserCreationLimit();
-
       Get.back();
+
       Get.snackbar(
         'Success',
         'User created successfully',
         backgroundColor: Colors.green,
         colorText: Colors.white,
-        icon: const Icon(Icons.check_circle, color: Colors.white),
       );
     } catch (e) {
       print('createUser error: $e');
@@ -1114,13 +1111,14 @@ class UserManagementController extends GetxController {
     }
   }
 
+
   // SUPER ADMIN creates ADMINS and COMPANIES (no limit)
   Future<void> createAdminOrCompany({
     required String email,
     required String password,
     required String fullName,
     required String phone,
-    required String type, // 'admin' or 'company'
+    required String type,
     String? companyName,
   }) async {
     try {
@@ -1330,13 +1328,33 @@ class TokenController extends GetxController {
           .map((e) => TokenModel.fromJson(e))
           .toList();
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load tokens: ${e.toString()}');
+      // Get.snackbar('Error', 'Failed to load tokens: ${e.toString()}');
       print('Load tokens error: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
+  // Future<void> loadNextSerialNumber() async {
+  //   try {
+  //     final result = await supabase
+  //         .from(SupabaseConfig.tokensTable)
+  //         .select('serial_number')
+  //         .order('serial_number', ascending: false)
+  //         .limit(1)
+  //         .maybeSingle();
+  //
+  //     if (result != null) {
+  //       final maxSerial = (result['serial_number'] as num?)?.toInt() ?? 0;
+  //       nextSerialNumber.value = maxSerial + 1;
+  //     } else {
+  //       nextSerialNumber.value = 1;
+  //     }
+  //   } catch (e) {
+  //     nextSerialNumber.value = 1;
+  //     print('Error loading next serial number: $e');
+  //   }
+  // }
   Future<void> loadNextSerialNumber() async {
     try {
       final result = await supabase
@@ -1347,7 +1365,7 @@ class TokenController extends GetxController {
           .maybeSingle();
 
       if (result != null) {
-        final maxSerial = (result['serial_number'] as num?)?.toInt() ?? 0;
+        final maxSerial = int.tryParse(result['serial_number'].toString()) ?? 0;
         nextSerialNumber.value = maxSerial + 1;
       } else {
         nextSerialNumber.value = 1;
@@ -1360,9 +1378,10 @@ class TokenController extends GetxController {
 
   Future<String> generateTokenNumber() async {
     final now = DateTime.now();
-    final dateStr = '${now.year % 100}${now.month.toString().padLeft(2, '0')}';
+    // final dateStr = '${now.year % 100}${now.month.toString().padLeft(2, '0')}';
+    final dateStr = '${now.month.toString().padLeft(2, '0')}';
     final serial = nextSerialNumber.value.toString().padLeft(4, '0');
-    return '$serial$dateStr';
+    return '$serial/$dateStr';
   }
 
 
@@ -1484,12 +1503,12 @@ class TokenController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to create token: ${e.toString()}',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      // Get.snackbar(
+      //   'Error',
+      //   'Failed to create token: ${e.toString()}',
+      //   backgroundColor: Colors.red,
+      //   colorText: Colors.white,
+      // );
       print('Create token error: $e');
     } finally {
       isLoading.value = false;
@@ -1641,12 +1660,12 @@ class TokenController extends GetxController {
       await loadTokens();
     } catch (e) {
       print('Error incrementing print count: $e');
-      Get.snackbar(
-        'Warning',
-        'Print count update failed: ${e.toString()}',
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
-      );
+      // Get.snackbar(
+      //   'Warning',
+      //   'Print count update failed: ${e.toString()}',
+      //   backgroundColor: Colors.orange,
+      //   colorText: Colors.white,
+      // );
     }
   }
 

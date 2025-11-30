@@ -27,7 +27,13 @@ class HomePageScreen extends StatelessWidget {
             child: Column(
               children: [
                 // Header with Emblem
-                _buildHeader(),
+                Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Image.asset('assets/images/home.jpg'),
+                    _buildHeader(),
+                  ],
+                ),
 
                 const SizedBox(height: 30),
 
@@ -58,31 +64,19 @@ class HomePageScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        // color: Colors.white,
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withOpacity(0.1),
+        //     blurRadius: 10,
+        //     offset: const Offset(0, 5),
+        //   ),
+        // ],
       ),
       child: Column(
         children: [
           // Ashoka Emblem Style Icon
-          Container(
-            padding: const EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.orange.shade800, width: 3),
-              color: Colors.white,
-            ),
-            child: Icon(
-              Icons.account_balance,
-              size: 60,
-              color: Colors.orange.shade800,
-            ),
-          ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
+          Image.asset('assets/images/new logo.jpg',height: 100,).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
 
           const SizedBox(height: 15),
 
@@ -98,15 +92,15 @@ class HomePageScreen extends StatelessWidget {
           //
           // const SizedBox(height: 5),
 
-          Text(
-            'GOVERNMENT APPROVED',
-            style: GoogleFonts.cinzel(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.orange.shade900,
-              letterSpacing: 1.5,
-            ),
-          ).animate().fadeIn(delay: 300.ms),
+          // Text(
+          //   'GOVERNMENT APPROVED',
+          //   style: GoogleFonts.cinzel(
+          //     fontSize: 14,
+          //     fontWeight: FontWeight.w600,
+          //     color: Colors.orange.shade900,
+          //     letterSpacing: 1.5,
+          //   ),
+          // ).animate().fadeIn(delay: 300.ms),
 
           const SizedBox(height: 20),
 
@@ -135,7 +129,7 @@ class HomePageScreen extends StatelessWidget {
             style: GoogleFonts.montserrat(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Colors.blue.shade900,
+              color: Colors.white,
               letterSpacing: 1.2,
             ),
             textAlign: TextAlign.center,
@@ -477,7 +471,7 @@ class HomePageScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildDeveloperCard('Krunal Kumar', Colors.blue),
+              _buildDeveloperCard('Kunal Kumar', Colors.blue),
               Container(
                 height: 50,
                 width: 1,

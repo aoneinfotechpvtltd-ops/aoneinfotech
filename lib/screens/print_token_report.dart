@@ -426,6 +426,7 @@
 //     );
 //   }
 // }
+import 'package:aoneinfotech/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -442,10 +443,14 @@ class PrintTokenReportScreen extends StatefulWidget {
 }
 
 class _PrintTokenReportScreenState extends State<PrintTokenReportScreen> {
+  final controller = Get.put(TokenController());
+  final selectedTokens = <String>[].obs;
+  final authController=Get.put(AuthController());
+
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(TokenController());
-    final selectedTokens = <String>[].obs;
+
+
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
@@ -474,7 +479,7 @@ class _PrintTokenReportScreenState extends State<PrintTokenReportScreen> {
       ),
       body: Column(
         children: [
-          // Header Card
+
           Container(
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.all(20),

@@ -4,6 +4,7 @@
 //   final String fullName;
 //   final String role;
 //   final String status;
+//   final String userType; // 'user' or 'company'
 //   final String? phone;
 //   final String? companyName;
 //   final String? createdBy;
@@ -18,6 +19,7 @@
 //     required this.fullName,
 //     required this.role,
 //     required this.status,
+//     required this.userType,
 //     this.phone,
 //     this.companyName,
 //     this.createdBy,
@@ -34,6 +36,7 @@
 //       fullName: json['full_name'] as String,
 //       role: json['role'] as String,
 //       status: json['status'] as String,
+//       userType: json['user_type'] as String? ?? 'user', // Default to 'user' for backward compatibility
 //       phone: json['phone'] as String?,
 //       companyName: json['company_name'] as String?,
 //       createdBy: json['created_by'] as String?,
@@ -53,6 +56,7 @@
 //       'full_name': fullName,
 //       'role': role,
 //       'status': status,
+//       'user_type': userType,
 //       'phone': phone,
 //       'company_name': companyName,
 //       'created_by': createdBy,
@@ -69,167 +73,8 @@
 //   bool get isViewer => role == 'viewer';
 //   bool get isActive => status == 'active';
 //   bool get isBlocked => status == 'blocked';
-// }
-//
-// class TokenModel {
-//   final String id;
-//   final String tokenNumber;
-//   final String status;
-//   final DateTime validFrom;
-//   final DateTime validUntil;
-//   final String? vehicleNumber;
-//   final double? weightInKg;
-//   final String? materialType;
-//   final String? createdBy;
-//   final DateTime createdAt;
-//   final DateTime? usedAt;
-//   final String? usedBy;
-//
-//   TokenModel({
-//     required this.id,
-//     required this.tokenNumber,
-//     required this.status,
-//     required this.validFrom,
-//     required this.validUntil,
-//     this.vehicleNumber,
-//     this.weightInKg,
-//     this.materialType,
-//     this.createdBy,
-//     required this.createdAt,
-//     this.usedAt,
-//     this.usedBy,
-//   });
-//
-//   factory TokenModel.fromJson(Map<String, dynamic> json) {
-//     return TokenModel(
-//       id: json['id'] as String,
-//       tokenNumber: json['token_number'] as String,
-//       status: json['status'] as String,
-//       validFrom: DateTime.parse(json['valid_from'] as String),
-//       validUntil: DateTime.parse(json['valid_until'] as String),
-//       vehicleNumber: json['vehicle_number'] as String?,
-//       weightInKg: json['weight_in_kg'] != null
-//           ? (json['weight_in_kg'] as num).toDouble()
-//           : null,
-//       materialType: json['material_type'] as String?,
-//       createdBy: json['created_by'] as String?,
-//       createdAt: DateTime.parse(json['created_at'] as String),
-//       usedAt: json['used_at'] != null
-//           ? DateTime.parse(json['used_at'] as String)
-//           : null,
-//       usedBy: json['used_by'] as String?,
-//     );
-//   }
-//
-//   Map<String, dynamic> toJson() {
-//     return {
-//       'id': id,
-//       'token_number': tokenNumber,
-//       'status': status,
-//       'valid_from': validFrom.toIso8601String(),
-//       'valid_until': validUntil.toIso8601String(),
-//       'vehicle_number': vehicleNumber,
-//       'weight_in_kg': weightInKg,
-//       'material_type': materialType,
-//       'created_by': createdBy,
-//       'created_at': createdAt.toIso8601String(),
-//       'used_at': usedAt?.toIso8601String(),
-//       'used_by': usedBy,
-//     };
-//   }
-//
-//   bool get isValid {
-//     final now = DateTime.now();
-//     return status == 'active' &&
-//         now.isAfter(validFrom) &&
-//         now.isBefore(validUntil);
-//   }
-//
-//   bool get isExpired {
-//     final now = DateTime.now();
-//     return status == 'expired' || now.isAfter(validUntil);
-//   }
-//
-//   bool get isUsed => status == 'used';
-//
-//   String get statusDisplay {
-//     if (isUsed) return 'Used';
-//     if (isExpired) return 'Expired';
-//     if (isValid) return 'Active';
-//     return 'Inactive';
-//   }
-// }
-// class UserModel {
-//   final String id;
-//   final String email;
-//   final String fullName;
-//   final String role;
-//   final String status;
-//   final String? phone;
-//   final String? companyName;
-//   final String? createdBy;
-//   final DateTime createdAt;
-//   final DateTime? lastLogin;
-//   final Map<String, dynamic>? deviceInfo;
-//   final String? ipAddress;
-//
-//   UserModel({
-//     required this.id,
-//     required this.email,
-//     required this.fullName,
-//     required this.role,
-//     required this.status,
-//     this.phone,
-//     this.companyName,
-//     this.createdBy,
-//     required this.createdAt,
-//     this.lastLogin,
-//     this.deviceInfo,
-//     this.ipAddress,
-//   });
-//
-//   factory UserModel.fromJson(Map<String, dynamic> json) {
-//     return UserModel(
-//       id: json['id'] as String,
-//       email: json['email'] as String,
-//       fullName: json['full_name'] as String,
-//       role: json['role'] as String,
-//       status: json['status'] as String,
-//       phone: json['phone'] as String?,
-//       companyName: json['company_name'] as String?,
-//       createdBy: json['created_by'] as String?,
-//       createdAt: DateTime.parse(json['created_at'] as String),
-//       lastLogin: json['last_login'] != null
-//           ? DateTime.parse(json['last_login'] as String)
-//           : null,
-//       deviceInfo: json['device_info'] as Map<String, dynamic>?,
-//       ipAddress: json['ip_address'] as String?,
-//     );
-//   }
-//
-//   Map<String, dynamic> toJson() {
-//     return {
-//       'id': id,
-//       'email': email,
-//       'full_name': fullName,
-//       'role': role,
-//       'status': status,
-//       'phone': phone,
-//       'company_name': companyName,
-//       'created_by': createdBy,
-//       'created_at': createdAt.toIso8601String(),
-//       'last_login': lastLogin?.toIso8601String(),
-//       'device_info': deviceInfo,
-//       'ip_address': ipAddress,
-//     };
-//   }
-//
-//   bool get isSuperAdmin => role == 'super_admin';
-//   bool get isAdmin => role == 'admin';
-//   bool get isUser => role == 'user';
-//   bool get isViewer => role == 'viewer';
-//   bool get isActive => status == 'active';
-//   bool get isBlocked => status == 'blocked';
+//   bool get isCompany => userType == 'company';
+//   bool get isRegularUser => userType == 'user';
 // }
 class UserModel {
   final String id;
@@ -237,7 +82,7 @@ class UserModel {
   final String fullName;
   final String role;
   final String status;
-  final String userType; // 'user' or 'company'
+  final String userType;
   final String? phone;
   final String? companyName;
   final String? createdBy;
@@ -245,6 +90,10 @@ class UserModel {
   final DateTime? lastLogin;
   final Map<String, dynamic>? deviceInfo;
   final String? ipAddress;
+
+  // 🔥 NEW FIELDS
+  final int cluster;         // 1–10
+  final String queryName;    // text
 
   UserModel({
     required this.id,
@@ -260,6 +109,8 @@ class UserModel {
     this.lastLogin,
     this.deviceInfo,
     this.ipAddress,
+    required this.cluster,
+    required this.queryName,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -269,16 +120,22 @@ class UserModel {
       fullName: json['full_name'] as String,
       role: json['role'] as String,
       status: json['status'] as String,
-      userType: json['user_type'] as String? ?? 'user', // Default to 'user' for backward compatibility
+      userType: json['user_type'] as String? ?? 'user',
       phone: json['phone'] as String?,
       companyName: json['company_name'] as String?,
       createdBy: json['created_by'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
       lastLogin: json['last_login'] != null
-          ? DateTime.parse(json['last_login'] as String)
+          ? DateTime.parse(json['last_login'])
           : null,
       deviceInfo: json['device_info'] as Map<String, dynamic>?,
       ipAddress: json['ip_address'] as String?,
+
+      // 🔥 NEW FIELDS (with default to avoid crash)
+      cluster: json['cluster'] != null
+          ? int.tryParse(json['cluster'].toString()) ?? 1
+          : 1,
+      queryName: json['query_name']?.toString() ?? "",
     );
   }
 
@@ -297,6 +154,10 @@ class UserModel {
       'last_login': lastLogin?.toIso8601String(),
       'device_info': deviceInfo,
       'ip_address': ipAddress,
+
+      // 🔥 NEW FIELDS
+      'cluster': cluster,
+      'query_name': queryName,
     };
   }
 
@@ -309,6 +170,7 @@ class UserModel {
   bool get isCompany => userType == 'company';
   bool get isRegularUser => userType == 'user';
 }
+
 // ============================================
 // TOKEN MODEL - UPDATED
 // ============================================

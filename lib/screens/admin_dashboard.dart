@@ -2834,30 +2834,30 @@ class AdminDashboard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.success.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Validity Period',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Obx(() => Text(
-                        'Valid for 30 days from ${validFrom.value.day}/${validFrom.value.month}/${validFrom.value.year}',
-                        style: const TextStyle(fontSize: 12),
-                        textAlign: TextAlign.center,
-                      )),
-                    ],
-                  ),
-                ),
+                // Container(
+                //   padding: const EdgeInsets.all(12),
+                //   decoration: BoxDecoration(
+                //     color: AppColors.success.withOpacity(0.1),
+                //     borderRadius: BorderRadius.circular(8),
+                //   ),
+                //   child: Column(
+                //     children: [
+                //       const Text(
+                //         'Validity Period',
+                //         style: TextStyle(
+                //           fontWeight: FontWeight.bold,
+                //           fontSize: 14,
+                //         ),
+                //       ),
+                //       const SizedBox(height: 8),
+                //       Obx(() => Text(
+                //         'Valid for 30 days from ${validFrom.value.day}/${validFrom.value.month}/${validFrom.value.year}',
+                //         style: const TextStyle(fontSize: 12),
+                //         textAlign: TextAlign.center,
+                //       )),
+                //     ],
+                //   ),
+                // ),
               ],
             ),
           ),
