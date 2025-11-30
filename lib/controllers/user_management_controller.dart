@@ -1177,7 +1177,8 @@ class UserManagementController extends GetxController {
       );
     } catch (e) {
       print('createAdminOrCompany error: $e');
-      Get.snackbar('Error', 'Email already registered try new one.');
+
+      // Get.snackbar('Error', 'Email already registered try new one.');
       // Get.snackbar('Error', 'Failed to create ${type}: $e');
     } finally {
       isLoading.value = false;

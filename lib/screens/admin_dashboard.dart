@@ -1292,15 +1292,15 @@ class SuperAdminDashboard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(
-            child: _buildOverviewItem(
-              'Total Revenue',
-              '₹${controller.monthRevenue.value.toStringAsFixed(0)}',
-              Icons.currency_rupee,
-              Colors.green,
-            ),
-          ),
-          Container(width: 1, height: 40, color: Colors.blue.shade200),
+          // Expanded(
+          //   child: _buildOverviewItem(
+          //     'Total Revenue',
+          //     '₹${controller.monthRevenue.value.toStringAsFixed(0)}',
+          //     Icons.currency_rupee,
+          //     Colors.green,
+          //   ),
+          // ),
+          // Container(width: 1, height: 40, color: Colors.blue.shade200),
           Expanded(
             child: _buildOverviewItem(
               'Total Users',
